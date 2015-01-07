@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ServiceDefinition name="FTP2Azure" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2012-05.1.7">
+<ServiceDefinition name="FTP2Azure" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2014-06.2.4">
   <WorkerRole name="FTPServerRole">
     <Endpoints>
       <InputEndpoint name="FTP" port="21" protocol="tcp" />
@@ -16,7 +16,6 @@
       <Setting name="MaxIdleSeconds" />
     </ConfigurationSettings>
     <Imports>
-      <Import moduleName="Diagnostics" />
     </Imports>
   </WorkerRole>
 </ServiceDefinition>

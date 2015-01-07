@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ServiceConfiguration serviceName="FTP2Azure" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" schemaVersion="2012-05.1.7">
+<ServiceConfiguration serviceName="FTP2Azure" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" 
+                      schemaVersion="2014-06.2.4">
   <Role name="FTPServerRole">
     <Instances count="1" />
     <ConfigurationSettings>
       <!-- Configure your diagnostic store -->
-      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=YOUR_ACCOUNT_NAME;AccountKey=YOUR_ACCOUNT_KEY" />
       <!-- Azure Storage Account  -->
       <Setting name="StorageAccount" value="DefaultEndpointsProtocol=https;AccountName=YOUR_ACCOUNT_NAME;AccountKey=YOUR_ACCOUNT_KEY" />
       <!-- Ftp server site, used to get its ipv4 ip, e.g. xxx.cloudapp.net-->
-      <Setting name="FtpServerHost" value="YOUR_SERVER_URL" />
+      <Setting name="FtpServerHost" value="127.0.0.1" />
       <!-- Mode="Debug", use development storage; Mode="Live", use azure storage-->
-      <Setting name="Mode" value="Live" />
+      <Setting name="Mode" value="Debug" />
       <!-- Max number of concurrent clients -->
       <Setting name="MaxClients" value="5" />
       <!-- Ftp Server Account Management -->

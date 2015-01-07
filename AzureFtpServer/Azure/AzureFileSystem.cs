@@ -1,9 +1,9 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Collections.Generic;
-using Microsoft.WindowsAzure.StorageClient;
 using AzureFtpServer.Ftp.FileSystem;
 using AzureFtpServer.Provider;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace AzureFtpServer.Azure
 {
@@ -42,16 +42,12 @@ namespace AzureFtpServer.Azure
 
         public IFileInfo GetFileInfo(string sPath)
         {
-            AzureCloudFile file = _provider.GetBlobInfo(sPath, false);
-            
-            return new AzureFileInfo(file);
+            return new AzureFileInfo(_provider.GetBlobInfo(sPath, false));
         }
 
         public IFileInfo GetDirectoryInfo(string sDirPath)
         {
-            AzureCloudFile dir = _provider.GetBlobInfo(sDirPath, true);
-            
-            return new AzureFileInfo(dir);
+            return new AzureFileInfo(_provider.GetBlobInfo(sDirPath, true));
         }
 
         /// <summary>
@@ -61,8 +57,15 @@ namespace AzureFtpServer.Azure
         /// <returns>an arry of filenames</returns>
         public string[] GetFiles(string sDirPath)
         {
-            IEnumerable<CloudBlob> files = _provider.GetFileListing(sDirPath);
-            string[] result = files.Select(r => r.Uri.AbsolutePath.ToString()).ToArray().ToFtpPath(sDirPath);
+            IEnumerable<ICloudBlob> files = _provider.GetFileListing(sDirPath);
+            
+            string[] result = files
+                .Select(r => r.Uri.AbsolutePath)
+                .Select(System.Uri.UnescapeDataString)
+                .Where(_ => !_.Contains(AzureBlobStorageProvider.CONTAINER_PLACEHOLDER_FILENAME))
+                .ToArray()
+                .ToFtpPath(sDirPath);
+
             return result;
         }
 

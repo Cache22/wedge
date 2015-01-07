@@ -22,7 +22,7 @@ namespace AzureFtpServer.Ftp.General
 
             //A blob name can contain any combination of characters, except reserved URL characters
             //Notice: '/' is a URL reserved char, but in Azure blob can be used for virtual dir
-            string validSpecialChars = @"$-_.+!*'()/";
+            string validSpecialChars = @"'öäüßÖÄÜ $-_.+!*()/";
 
             foreach (char c in sFileName)
             {

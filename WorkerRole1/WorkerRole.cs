@@ -67,38 +67,38 @@ namespace FTPServerRole {
 
         private static void ConfigureDiagnosticsV1_4()
         {
-            DiagnosticMonitorTraceListener tmpListener = new DiagnosticMonitorTraceListener();
-            Trace.Listeners.Add(tmpListener);
+            //DiagnosticMonitorTraceListener tmpListener = new DiagnosticMonitorTraceListener();
+            //Trace.Listeners.Add(tmpListener);
 
-            CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse(
-                RoleEnvironment.GetConfigurationSettingValue("Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString"));
+            //CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse(
+            //    RoleEnvironment.GetConfigurationSettingValue("Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString"));
 
-            var manager = cloudStorageAccount.CreateRoleInstanceDiagnosticManager(
-                RoleEnvironment.DeploymentId,
-                RoleEnvironment.CurrentRoleInstance.Role.Name,
-                RoleEnvironment.CurrentRoleInstance.Id);
+            //var manager = cloudStorageAccount.CreateRoleInstanceDiagnosticManager(
+            //    RoleEnvironment.DeploymentId,
+            //    RoleEnvironment.CurrentRoleInstance.Role.Name,
+            //    RoleEnvironment.CurrentRoleInstance.Id);
 
-            DiagnosticMonitorConfiguration config = manager.GetCurrentConfiguration();
+            //DiagnosticMonitorConfiguration config = manager.GetCurrentConfiguration();
 
-            config.ConfigurationChangePollInterval = TimeSpan.FromMinutes(1);
+            //config.ConfigurationChangePollInterval = TimeSpan.FromMinutes(1);
 
-            config.Logs.ScheduledTransferPeriod = TimeSpan.FromMinutes(1D);
-            config.Logs.ScheduledTransferLogLevelFilter = LogLevel.Undefined;
+            //config.Logs.ScheduledTransferPeriod = TimeSpan.FromMinutes(1D);
+            //config.Logs.ScheduledTransferLogLevelFilter = LogLevel.Undefined;
 
-            config.Directories.ScheduledTransferPeriod = TimeSpan.FromMinutes(5);
+            //config.Directories.ScheduledTransferPeriod = TimeSpan.FromMinutes(5);
             
-            config.WindowsEventLog.DataSources.Add("Application!*");
-            config.WindowsEventLog.DataSources.Add("System!*");
-            config.WindowsEventLog.ScheduledTransferPeriod = TimeSpan.FromMinutes(5);
+            //config.WindowsEventLog.DataSources.Add("Application!*");
+            //config.WindowsEventLog.DataSources.Add("System!*");
+            //config.WindowsEventLog.ScheduledTransferPeriod = TimeSpan.FromMinutes(5);
 
-            PerformanceCounterConfiguration performanceCounterConfiguration = new PerformanceCounterConfiguration();
-            performanceCounterConfiguration.CounterSpecifier = @"\Processor(_Total)\% Processor Time";
-            performanceCounterConfiguration.SampleRate = TimeSpan.FromSeconds(10d);
+            //PerformanceCounterConfiguration performanceCounterConfiguration = new PerformanceCounterConfiguration();
+            //performanceCounterConfiguration.CounterSpecifier = @"\Processor(_Total)\% Processor Time";
+            //performanceCounterConfiguration.SampleRate = TimeSpan.FromSeconds(10d);
 
-            config.PerformanceCounters.DataSources.Add(performanceCounterConfiguration);
-            config.PerformanceCounters.ScheduledTransferPeriod = TimeSpan.FromMinutes(1d);
+            //config.PerformanceCounters.DataSources.Add(performanceCounterConfiguration);
+            //config.PerformanceCounters.ScheduledTransferPeriod = TimeSpan.FromMinutes(1d);
 
-            manager.SetCurrentConfiguration(config);
+            //manager.SetCurrentConfiguration(config);
         }
 
     }
