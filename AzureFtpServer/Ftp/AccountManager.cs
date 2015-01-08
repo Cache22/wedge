@@ -16,7 +16,6 @@ namespace AzureFtpServer.Ftp
 
         private const char separator = ':';
         private Dictionary<string, string> _accounts = new Dictionary<string, string>();
-        private int _usernum = 0;
         
         #endregion
 
@@ -25,15 +24,6 @@ namespace AzureFtpServer.Ftp
         public AccountManager(string accountInfo)
         {
             this.LoadConfigration(accountInfo);
-        }
-
-        #endregion
-
-        #region Properties
-        
-        public int UserNum 
-        {
-            get { return _usernum; }
         }
 
         #endregion
@@ -47,7 +37,6 @@ namespace AzureFtpServer.Ftp
         public int LoadConfigration(string accountInfo)
         {
             // init member vars 
-            _usernum = 0;
             _accounts.Clear();
 
             //int idx = 1; // use idx to concat the setting name
@@ -98,12 +87,11 @@ namespace AzureFtpServer.Ftp
                     continue;
 
                 _accounts.Add(username, password);
-                _usernum++;
             }
 
-            Trace.WriteLine(string.Format("Load {0} accounts.", _usernum), "Information");
+            Trace.WriteLine(string.Format("Load {0} accounts.", _accounts.Count), "Information");
             
-            return _usernum;
+            return _accounts.Count;
         }
 
         /// <summary>
