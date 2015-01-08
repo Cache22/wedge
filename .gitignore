@@ -8,3 +8,5 @@
 /FTP2Azure/bin
 /*.suo
 /FTP2Azure/*.user
+/FTPServerWorkerRole/obj
+/FTPServerWorkerRole/bin
