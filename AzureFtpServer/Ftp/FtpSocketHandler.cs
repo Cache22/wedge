@@ -6,6 +6,7 @@ using System.Diagnostics;
 using AzureFtpServer.Ftp.FileSystem;
 using AzureFtpServer.General;
 using AzureFtpServer.Provider;
+using System.Net;
 
 namespace AzureFtpServer.Ftp
 {
@@ -21,6 +22,7 @@ namespace AzureFtpServer.Ftp
         private readonly int m_nId;
         private FtpConnectionObject m_theCommands;
         private TcpClient m_theSocket;
+        private IPEndPoint m_pasvEndpoint;
         private Thread m_theThread;
         private Thread m_theMonitorThread;
         private static DateTime m_lastActiveTime; // shared between threads
@@ -42,10 +44,12 @@ namespace AzureFtpServer.Ftp
 
         #region Construction
 
-        public FtpSocketHandler(IFileSystemClassFactory fileSystemClassFactory, int nId)
+        public FtpSocketHandler(IFileSystemClassFactory fileSystemClassFactory, int nId, IPEndPoint pasvEndpoint, int maxIdleSeconds)
         {
             m_nId = nId;
             m_fileSystemClassFactory = fileSystemClassFactory;
+            this.m_pasvEndpoint = pasvEndpoint;
+            this.m_maxIdleSeconds = maxIdleSeconds;
         }
 
         #endregion
@@ -55,12 +59,8 @@ namespace AzureFtpServer.Ftp
         public void Start(TcpClient socket, System.Text.Encoding encoding)
         {
             m_theSocket = socket;
-
-            m_maxIdleSeconds = StorageProviderConfiguration.MaxIdleSeconds;
-
             m_lastActiveTime = DateTime.Now;
-
-            m_theCommands = new FtpConnectionObject(m_fileSystemClassFactory, m_nId, socket);
+            m_theCommands = new FtpConnectionObject(m_fileSystemClassFactory, m_nId, socket, pasvEndpoint: this.m_pasvEndpoint);
             m_theCommands.Encoding = encoding;
             m_theThread = new Thread(ThreadRun);
             m_theThread.Start();

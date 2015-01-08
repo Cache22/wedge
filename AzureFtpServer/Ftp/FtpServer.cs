@@ -7,6 +7,7 @@ using System.Diagnostics;
 using AzureFtpServer.Ftp.FileSystem;
 using AzureFtpServer.General;
 using AzureFtpServer.Provider;
+using System.Net;
 
 namespace AzureFtpServer.Ftp
 {
@@ -26,6 +27,9 @@ namespace AzureFtpServer.Ftp
         private bool m_started = false;
         private Encoding m_encoding;
         private int m_maxClients;
+        private IPEndPoint m_pasvEndpoint;
+        private IPEndPoint m_ftpEndpoint;
+        private int m_maxIdleSeconds;
 
         #endregion
 
@@ -44,10 +48,28 @@ namespace AzureFtpServer.Ftp
 
         #region Construction
 
-        public FtpServer(IFileSystemClassFactory fileSystemClassFactory)
+        public FtpServer(IFileSystemClassFactory fileSystemClassFactory, IPEndPoint ftpEndpoint, IPEndPoint pasvEndpoint, 
+            int maxClients, int maxIdleSeconds, string connectionEncoding)
         {
             m_apConnections = new ArrayList();
             m_fileSystemClassFactory = fileSystemClassFactory;
+            this.m_ftpEndpoint = ftpEndpoint;
+            this.m_pasvEndpoint = pasvEndpoint;
+            this.m_maxClients = maxClients;
+            this.m_maxIdleSeconds = maxIdleSeconds;
+
+            switch (connectionEncoding)
+            {
+                case "ASCII":
+                    m_encoding = Encoding.ASCII;
+                    Trace.WriteLine("Set ftp connection encoding: ASCII", "Information");
+                    break;
+                case "UTF8":
+                default:
+                    m_encoding = Encoding.UTF8;
+                    Trace.WriteLine("Set ftp connection encoding: UTF8", "Information");
+                    break;
+            }
         }
 
         ~FtpServer()
@@ -69,12 +91,6 @@ namespace AzureFtpServer.Ftp
 
         public void Start()
         {
-            // initialise the encoding of the control channel
-            InitialiseConnectionEncoding();
-            
-            // initialise the max number of clients
-            InitialiseMaxClients();
-
             m_theThread = new Thread(ThreadRun);
             m_theThread.Start();
             m_started= true;
@@ -102,12 +118,11 @@ namespace AzureFtpServer.Ftp
             FtpServerMessageHandler.Message += TraceMessage;
 
             // listen at the port by the "FTP" endpoint setting
-            System.Net.IPEndPoint ipEndPoint = StorageProviderConfiguration.FTPEndpoint;
-            m_socketListen = SocketHelpers.CreateTcpListener(ipEndPoint);
+            m_socketListen = SocketHelpers.CreateTcpListener(this.m_ftpEndpoint);
 
             if (m_socketListen != null)
             {
-                Trace.TraceInformation("FTP Server listened at: " + ipEndPoint);
+                Trace.TraceInformation("FTP Server listened at: " + this.m_ftpEndpoint);
 
                 m_socketListen.Start();
 
@@ -159,56 +174,6 @@ namespace AzureFtpServer.Ftp
             }
         }
 
-        /// <summary>
-        /// Init the encoding of the control channel by the Role setting "ConnectionEncoding"
-        /// If the value is "ASCII", encoding = Encoding.ASCII
-        /// Otherwise, m_encoding = Encoding.UTF8
-        /// </summary>
-        private void InitialiseConnectionEncoding()
-        {
-            string encoding = StorageProviderConfiguration.ConnectionEncoding;
-            switch (encoding)
-            {
-                case "ASCII":
-                    m_encoding = Encoding.ASCII;
-                    Trace.WriteLine("Set ftp connection encoding: ASCII", "Information");
-                    break;
-                case "UTF8":
-                default:
-                    m_encoding = Encoding.UTF8;
-                    Trace.WriteLine("Set ftp connection encoding: UTF8", "Information");
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Init the member variable m_maxClient by the Role setting "MaxClients"
-        /// If any exception or error happens, use default value 5
-        /// </summary>
-        private void InitialiseMaxClients()
-        {
-            string maxClients = StorageProviderConfiguration.MaxClients;
-
-            int iMaxClients = 5;
-            
-            try
-            {
-                iMaxClients = Convert.ToInt32(maxClients);
-            }
-            catch (Exception)
-            { 
-                // if the "MaxClients" setting is invalid to convert into integer, use default value
-                Trace.WriteLine(string.Format("Invalid MaxClients setting: {0}", maxClients), "Warnning");
-            }
-
-            if (iMaxClients <= 0)
-            { 
-                // negtive or 0 is also invalid, use default value
-                iMaxClients = 5;
-            }
-
-            m_maxClients = iMaxClients;
-        }
 
         private void SendAcceptMessage(TcpClient socket)
         {
@@ -222,7 +187,9 @@ namespace AzureFtpServer.Ftp
 
         private void InitialiseSocketHandler(TcpClient socket)
         {
-            var handler = new FtpSocketHandler(m_fileSystemClassFactory, m_nId);
+            var handler = new FtpSocketHandler(m_fileSystemClassFactory, m_nId, 
+                pasvEndpoint: this.m_pasvEndpoint, 
+                maxIdleSeconds: this.m_maxIdleSeconds);
             
             // get encoding for the socket connection
             

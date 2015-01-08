@@ -13,14 +13,14 @@ namespace AzureFtpServer.FtpCommands
     /// </summary>
     internal class PasvCommandHandler : FtpCommandHandler
     {
-        private int m_nPort;
+        private IPEndPoint m_pasvEndpoint;
 
         // This command maybe won't work if the ftp server is deployed locally <= firewall
-        public PasvCommandHandler(FtpConnectionObject connectionObject)
+        public PasvCommandHandler(FtpConnectionObject connectionObject, IPEndPoint pasvEndpoint)
             : base("PASV", connectionObject)
         {
             // set passive listen port
-            m_nPort = StorageProviderConfiguration.FTPPASVEndpoint.Port;
+            this.m_pasvEndpoint = pasvEndpoint;
         }
 
         protected override string OnProcess(string sMessage)
@@ -33,11 +33,11 @@ namespace AzureFtpServer.FtpCommands
 
 
 
-            TcpListener listener = SocketHelpers.CreateTcpListener(StorageProviderConfiguration.FTPPASVEndpoint);
+            TcpListener listener = SocketHelpers.CreateTcpListener(this.m_pasvEndpoint);
 
             if (listener == null)
             {
-                return GetMessage(550, string.Format("Couldn't start listener on port {0}", m_nPort));
+                return GetMessage(550, string.Format("Couldn't start listener on port {0}", this.m_pasvEndpoint.Port));
             }
 
             SocketHelpers.Send(ConnectionObject.Socket, string.Format("227 Entering Passive Mode ({0})\r\n", pasvListenAddress), ConnectionObject.Encoding);
@@ -62,9 +62,9 @@ namespace AzureFtpServer.FtpCommands
 
             // append the port
             retIpPort += ',';
-            retIpPort += (m_nPort / 256).ToString();
+            retIpPort += (this.m_pasvEndpoint.Port / 256).ToString();
             retIpPort += ',';
-            retIpPort += (m_nPort % 256).ToString();
+            retIpPort += (this.m_pasvEndpoint.Port % 256).ToString();
 
             return retIpPort;
         }

@@ -264,7 +264,7 @@
                                 IsDirectory = false
                             };
                 }
-                catch (StorageException se)
+                catch (StorageException)
                 {
                     return null;
                 }

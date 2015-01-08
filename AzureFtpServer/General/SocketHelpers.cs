@@ -1,18 +1,15 @@
+using AzureFtpServer.Provider;
 using System;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Security.Cryptography;
-using AzureFtpServer.Provider;
 
 namespace AzureFtpServer.General
 {
     public sealed class SocketHelpers
     {
-        private SocketHelpers()
-        {
-        }
+        private SocketHelpers() { }
 
         public static bool Send(TcpClient socket, byte[] abMessage)
         {

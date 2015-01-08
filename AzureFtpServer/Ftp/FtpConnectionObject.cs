@@ -6,6 +6,7 @@ using AzureFtpServer.Ftp.FileSystem;
 using AzureFtpServer.FtpCommands;
 using AzureFtpServer.Ftp;
 using AzureFtpServer.General;
+using System.Net;
 
 namespace AzureFtpServer.Ftp
 {
@@ -20,6 +21,7 @@ namespace AzureFtpServer.Ftp
         private readonly Hashtable m_theCommandHashTable;
         private bool isLogged;
         private static bool m_useDataSocket;
+        private IPEndPoint m_pasvEndpoint;
 
         #endregion
 
@@ -34,13 +36,14 @@ namespace AzureFtpServer.Ftp
 
         #region Construction
 
-        public FtpConnectionObject(IFileSystemClassFactory fileSystemClassFactory, int nId, TcpClient socket)
+        public FtpConnectionObject(IFileSystemClassFactory fileSystemClassFactory, int nId, TcpClient socket, IPEndPoint pasvEndpoint)
             : base(nId, socket)
         {
             m_theCommandHashTable = new Hashtable();
             m_fileSystemClassFactory = fileSystemClassFactory;
             isLogged = false;
             m_useDataSocket = false;
+            m_pasvEndpoint = pasvEndpoint;
             LoadCommands();
         }
 
@@ -85,7 +88,7 @@ namespace AzureFtpServer.Ftp
             AddCommand(new NlstCommandHandler(this));
             AddCommand(new NoopCommandHandler(this));
             AddCommand(new PasswordCommandHandler(this));
-            AddCommand(new PasvCommandHandler(this));
+            AddCommand(new PasvCommandHandler(connectionObject: this, pasvEndpoint: m_pasvEndpoint));
             AddCommand(new PortCommandHandler(this));
             AddCommand(new PwdCommandHandler(this));
             AddCommand(new QuitCommandHandler(this));

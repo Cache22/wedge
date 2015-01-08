@@ -9,28 +9,9 @@
     using System.Linq;
     using System.Threading;
 
-
     public class WorkerRole : RoleEntryPoint
     {
         private FtpServer _server;
-
-        public override void Run() {
-
-            // This is a sample worker implementation. Replace with your logic.
-            Trace.WriteLine("FTPRole entry point called", "Information");
-
-            while (true) {
-                if (_server.Started) {
-                    Thread.Sleep(10000);
-                    //Trace.WriteLine("Server is alive.", "Information");
-                }
-                else {
-                    _server.Start();
-                    Trace.WriteLine("Server starting.", "Control");
-                }
-
-            }
-        }
 
         public override bool OnStart() {
 
@@ -40,12 +21,7 @@
             StorageProviderConfiguration.Mode = (Modes)Enum.Parse(typeof(Modes), RoleEnvironment.GetConfigurationSettingValue("Mode"));
             StorageProviderConfiguration.FtpAccount = RoleEnvironment.GetConfigurationSettingValue("FtpAccount");
             StorageProviderConfiguration.FtpServerHost = RoleEnvironment.GetConfigurationSettingValue("FtpServerHost");
-            StorageProviderConfiguration.MaxIdleSeconds = int.Parse(RoleEnvironment.GetConfigurationSettingValue("MaxIdleSeconds"));
             StorageProviderConfiguration.QueueNotification = bool.Parse(RoleEnvironment.GetConfigurationSettingValue("QueueNotification"));
-            StorageProviderConfiguration.ConnectionEncoding = RoleEnvironment.GetConfigurationSettingValue("ConnectionEncoding");
-            StorageProviderConfiguration.MaxClients = RoleEnvironment.GetConfigurationSettingValue("MaxClients");
-            StorageProviderConfiguration.FTPPASVEndpoint = RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTPPASV"].IPEndpoint;
-            StorageProviderConfiguration.FTPEndpoint = RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTP"].IPEndpoint;
 
             if (StorageProviderConfiguration.Mode == Modes.Live)
                 ConfigureDiagnosticsV1_4();
@@ -55,7 +31,14 @@
             RoleEnvironment.Changing += RoleEnvironmentChanging;
 
             if (_server == null)
-                _server = new FtpServer(new AzureFileSystemFactory(RoleEnvironment.GetConfigurationSettingValue("StorageAccount")));
+                _server = new FtpServer(
+                    fileSystemClassFactory: new AzureFileSystemFactory(
+                            storageAccount: RoleEnvironment.GetConfigurationSettingValue("StorageAccount")),
+                        ftpEndpoint: RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTP"].IPEndpoint, 
+                        pasvEndpoint: RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTPPASV"].IPEndpoint,
+                        maxClients: int.Parse(RoleEnvironment.GetConfigurationSettingValue("MaxClients")),
+                        maxIdleSeconds: int.Parse(RoleEnvironment.GetConfigurationSettingValue("MaxIdleSeconds")),
+                        connectionEncoding: RoleEnvironment.GetConfigurationSettingValue("ConnectionEncoding"));
 
             _server.NewConnection += ServerNewConnection;
 
@@ -110,5 +93,26 @@
             //manager.SetCurrentConfiguration(config);
         }
 
+        public override void Run()
+        {
+
+            // This is a sample worker implementation. Replace with your logic.
+            Trace.WriteLine("FTPRole entry point called", "Information");
+
+            while (true)
+            {
+                if (_server.Started)
+                {
+                    Thread.Sleep(10000);
+                    //Trace.WriteLine("Server is alive.", "Information");
+                }
+                else
+                {
+                    _server.Start();
+                    Trace.WriteLine("Server starting.", "Control");
+                }
+
+            }
+        }
     }
 }
