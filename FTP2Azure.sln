@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "FTP2Azure", "FTP2Azure\FTP2Azure.ccproj", "{97D0D7B0-C0FF-458C-A74B-FD0A84AF20AB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTPServerWorkerRole", "FTPServerWorkerRole\FTPServerWorkerRole.csproj", "{19D55950-ED17-46EF-85BC-78690CD6AE4E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFtpServer", "AzureFtpServer\AzureFtpServer.csproj", "{A6520CEB-6E55-4C9D-B581-64E432DB16D0}"
@@ -18,16 +16,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{BB637F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Selfhost", "Selfhost\Selfhost.csproj", "{0378EA07-EFB5-4431-8647-DAAC3C9FDD40}"
 EndProject
+Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "FTP2Azure", "FTP2Azure\FTP2Azure.ccproj", "{EE2863E3-78D1-4E0E-AEE3-30970EB943E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{97D0D7B0-C0FF-458C-A74B-FD0A84AF20AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{97D0D7B0-C0FF-458C-A74B-FD0A84AF20AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{97D0D7B0-C0FF-458C-A74B-FD0A84AF20AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{97D0D7B0-C0FF-458C-A74B-FD0A84AF20AB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{19D55950-ED17-46EF-85BC-78690CD6AE4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{19D55950-ED17-46EF-85BC-78690CD6AE4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19D55950-ED17-46EF-85BC-78690CD6AE4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -40,6 +36,10 @@ Global
 		{0378EA07-EFB5-4431-8647-DAAC3C9FDD40}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0378EA07-EFB5-4431-8647-DAAC3C9FDD40}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0378EA07-EFB5-4431-8647-DAAC3C9FDD40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE2863E3-78D1-4E0E-AEE3-30970EB943E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE2863E3-78D1-4E0E-AEE3-30970EB943E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE2863E3-78D1-4E0E-AEE3-30970EB943E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE2863E3-78D1-4E0E-AEE3-30970EB943E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
