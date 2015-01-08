@@ -8,7 +8,7 @@
       <Setting name="ConnectionEncoding" value="UTF8" />
       <Setting name="FtpAccount" value="(container1:test1)(container2:test2)(container3:test3)($root:testroot)" />
       <Setting name="MaxClients" value="5" />
-      <Setting name="FtpServerHost" value="localhost" />
+      <Setting name="FtpServerHost" value="ftpproxy.cloudapp.net" />
       <Setting name="QueueNotification" value="false" />
       <Setting name="MaxIdleSeconds" value="300" />
     </ConfigurationSettings>
