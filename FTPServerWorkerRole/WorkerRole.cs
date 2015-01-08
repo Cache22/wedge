@@ -56,7 +56,7 @@
                         pasvEndpoint: RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTPPASV"].IPEndpoint,
                         localAddress: getLocalAddress(),
                         maxClients: int.Parse(RoleEnvironment.GetConfigurationSettingValue("MaxClients")),
-                        maxIdleSeconds: int.Parse(RoleEnvironment.GetConfigurationSettingValue("MaxIdleSeconds")),
+                        maxIdleTime: TimeSpan.FromSeconds(int.Parse(RoleEnvironment.GetConfigurationSettingValue("MaxIdleSeconds"))),
                         connectionEncoding: RoleEnvironment.GetConfigurationSettingValue("ConnectionEncoding"));
 
             _server.NewConnection += ServerNewConnection;

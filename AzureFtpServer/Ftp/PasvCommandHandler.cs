@@ -35,8 +35,6 @@ namespace AzureFtpServer.FtpCommands
 
             //return GetMessage(227, string.Format("Entering Passive Mode ({0})", pasvListenAddress));
 
-
-
             TcpListener listener = SocketHelpers.CreateTcpListener(this.m_pasvEndpoint);
 
             if (listener == null)
@@ -70,7 +68,5 @@ namespace AzureFtpServer.FtpCommands
 
             return retIpPort;
         }
-
-       
     }
 }

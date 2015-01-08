@@ -27,7 +27,7 @@ namespace AzureFtpServer.Ftp
         private Thread m_theThread;
         private Thread m_theMonitorThread;
         private static DateTime m_lastActiveTime; // shared between threads
-        private int m_maxIdleSeconds;
+        private TimeSpan m_maxIdleTime;
 
         #endregion
 
@@ -45,13 +45,13 @@ namespace AzureFtpServer.Ftp
 
         #region Construction
 
-        public FtpSocketHandler(IFileSystemClassFactory fileSystemClassFactory, int nId, IPEndPoint pasvEndpoint, IPAddress localAddress,  int maxIdleSeconds)
+        public FtpSocketHandler(IFileSystemClassFactory fileSystemClassFactory, int nId, IPEndPoint pasvEndpoint, IPAddress localAddress, TimeSpan maxIdleTime)
         {
             m_nId = nId;
             m_fileSystemClassFactory = fileSystemClassFactory;
             this.m_pasvEndpoint = pasvEndpoint;
             this.m_localAddress = localAddress;
-            this.m_maxIdleSeconds = maxIdleSeconds;
+            this.m_maxIdleTime = maxIdleTime;
         }
 
         #endregion
@@ -121,9 +121,9 @@ namespace AzureFtpServer.Ftp
                 DateTime currentTime = DateTime.Now;
                 TimeSpan timeSpan = currentTime - m_lastActiveTime;
                 // has been idle for a long time
-                if ((timeSpan.TotalSeconds > m_maxIdleSeconds) && !m_theCommands.DataSocketOpen) 
+                if ((timeSpan.TotalSeconds > m_maxIdleTime.TotalSeconds) && !m_theCommands.DataSocketOpen) 
                 {
-                    SocketHelpers.Send(m_theSocket, string.Format("426 No operations for {0}+ seconds. Bye!", m_maxIdleSeconds), m_theCommands.Encoding);
+                    SocketHelpers.Send(m_theSocket, string.Format("426 No operations for {0}+ seconds. Bye!", m_maxIdleTime.TotalSeconds), m_theCommands.Encoding);
                     FtpServerMessageHandler.SendMessage(m_nId, "Connection closed for too long idle time.");
                     if (Closed != null)
                     {
@@ -133,7 +133,7 @@ namespace AzureFtpServer.Ftp
                     this.Stop();
                     return;
                 }
-                Thread.Sleep(1000 * m_maxIdleSeconds);
+                Thread.Sleep(m_maxIdleTime);
             }
 
             return; // only monitor the work thread
