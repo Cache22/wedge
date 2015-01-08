@@ -10,3 +10,5 @@
 /FTP2Azure/*.user
 /FTPServerWorkerRole/obj
 /FTPServerWorkerRole/bin
+/Selfhost/bin
+/Selfhost/obj
