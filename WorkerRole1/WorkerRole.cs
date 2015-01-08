@@ -20,11 +20,7 @@
             // Set the maximum number of concurrent connections, no use?
             //ServicePointManager.DefaultConnectionLimit = 12;
 
-            StorageProviderConfiguration.Mode = (Modes)Enum.Parse(typeof(Modes), RoleEnvironment.GetConfigurationSettingValue("Mode"));
-            StorageProviderConfiguration.FtpAccount = RoleEnvironment.GetConfigurationSettingValue("FtpAccount");
-
-            if (StorageProviderConfiguration.Mode == Modes.Live)
-                ConfigureDiagnosticsV1_4();
+            ConfigureDiagnosticsV1_4();
 
             // For information on handling configuration changes
             // see the MSDN topic at http://go.microsoft.com/fwlink/?LinkId=166357.
@@ -32,27 +28,30 @@
 
             Func<IPAddress> getLocalAddress = () => 
             {
-                string ftpHost = null;
-                if (StorageProviderConfiguration.Mode == Modes.Live)
-                    ftpHost = RoleEnvironment.GetConfigurationSettingValue("FtpServerHost");
-                else
-                    ftpHost = "localhost";
-                IPHostEntry hostEntry = Dns.GetHostEntry(ftpHost);
-                IPAddress localAddress = null;
-                foreach (var ip in hostEntry.AddressList)
+                string ftpHost = RoleEnvironment.GetConfigurationSettingValue("FtpServerHost");
+
+                if (ftpHost.ToLower() == "localhost") 
+                    return IPAddress.Loopback;
+
+
+                foreach (var ip in Dns.GetHostEntry(ftpHost).AddressList)
                 {
                     if (ip.AddressFamily == AddressFamily.InterNetwork)
-                        localAddress = ip;
+                    {
+                        Trace.TraceInformation(string.Format("localAddress == {0}", ip));
+                        return ip;
+                    }
                 }
-                return localAddress;
-            };
 
+                return IPAddress.None;
+            };
 
             if (_server == null)
                 _server = new FtpServer(
                     fileSystemClassFactory: new AzureFileSystemFactory(
                             storageAccount: RoleEnvironment.GetConfigurationSettingValue("StorageAccount"),
-                            sendQueueNotificationsOnUpload: bool.Parse(RoleEnvironment.GetConfigurationSettingValue("QueueNotification"))),
+                            sendQueueNotificationsOnUpload: bool.Parse(RoleEnvironment.GetConfigurationSettingValue("QueueNotification")),
+                            accountInfo: RoleEnvironment.GetConfigurationSettingValue("FtpAccount")),
                         ftpEndpoint: RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTP"].IPEndpoint, 
                         pasvEndpoint: RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTPPASV"].IPEndpoint,
                         localAddress: getLocalAddress(),

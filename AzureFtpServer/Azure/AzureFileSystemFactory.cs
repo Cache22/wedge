@@ -12,13 +12,12 @@ namespace AzureFtpServer.Azure
         #endregion
 
         #region Construction
-        
-        public AzureFileSystemFactory(string storageAccount, bool sendQueueNotificationsOnUpload)
+
+        public AzureFileSystemFactory(string storageAccount, bool sendQueueNotificationsOnUpload, string accountInfo)
         {
             this.m_storageAccount = storageAccount;
             this.m_sendQueueNotificationsOnUpload = sendQueueNotificationsOnUpload;
-            m_accountManager = new AccountManager();
-            m_accountManager.LoadConfigration();
+            this.m_accountManager = new AccountManager(accountInfo);
         }
         #endregion
 

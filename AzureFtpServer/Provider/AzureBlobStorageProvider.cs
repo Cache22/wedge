@@ -68,19 +68,8 @@
             
             ContainerName = containerName;
 
-            if (StorageProviderConfiguration.Mode == Modes.Debug)
-            {
-                _account = CloudStorageAccount.DevelopmentStorageAccount;
-                _blobClient = _account.CreateCloudBlobClient();
-                // _blobClient.ServerTimeout = TimeSpan.FromSeconds(5);
-            }
-            else
-            {
-                _account = CloudStorageAccount.Parse(storageAccount);
-                _blobClient = _account.CreateCloudBlobClient();
-                // _blobClient.ServerTimeout = TimeSpan.FromSeconds(5);
-            }
-
+            _account = CloudStorageAccount.Parse(storageAccount);
+            _blobClient = _account.CreateCloudBlobClient();
             _container = _blobClient.GetContainerReference(ContainerName);
             try
             {

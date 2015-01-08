@@ -15,17 +15,16 @@ namespace AzureFtpServer.Ftp
         #region Member Variables
 
         private const char separator = ':';
-        private Dictionary<string, string> _accounts;
-        private int _usernum;
+        private Dictionary<string, string> _accounts = new Dictionary<string, string>();
+        private int _usernum = 0;
         
         #endregion
 
         #region Construction
 
-        public AccountManager()
+        public AccountManager(string accountInfo)
         {
-            _accounts = new Dictionary<string, string>();
-            _usernum = 0;
+            this.LoadConfigration(accountInfo);
         }
 
         #endregion
@@ -45,7 +44,7 @@ namespace AzureFtpServer.Ftp
         /// Read the settings in RoleEnvironment, insert into the accounts dictionary
         /// </summary>
         /// <returns></returns>
-        public int LoadConfigration()
+        public int LoadConfigration(string accountInfo)
         {
             // init member vars 
             _usernum = 0;
@@ -54,8 +53,6 @@ namespace AzureFtpServer.Ftp
             //int idx = 1; // use idx to concat the setting name
             
             //bool hasNext = true; // bool value, need find the next setting
-            // Get the account setting
-            string accountInfo = StorageProviderConfiguration.FtpAccount;
 
             while (true)
             {

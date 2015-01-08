@@ -7,7 +7,6 @@
     </Endpoints>
     <ConfigurationSettings>
       <Setting name="StorageAccount" />
-      <Setting name="Mode" />
       <Setting name="ConnectionEncoding" />
       <Setting name="FtpAccount" />
       <Setting name="MaxClients" />
