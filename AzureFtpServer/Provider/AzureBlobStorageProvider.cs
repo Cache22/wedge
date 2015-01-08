@@ -21,18 +21,23 @@
 
     public sealed class AzureBlobStorageProvider
     {
+        internal const string CONTAINER_PLACEHOLDER_FILENAME = "$$$.$$$";
+
         #region Member variables
 
         private CloudStorageAccount _account;
         private CloudBlobClient _blobClient;
         private CloudBlobContainer _container;
+        private bool m_sendQueueNotificationsOnUpload;
 
         #endregion
 
         #region Construction
 
-        public AzureBlobStorageProvider(string storageAccount, string containerName)
+        public AzureBlobStorageProvider(string storageAccount, string containerName, bool sendQueueNotificationsOnUpload)
         {
+            this.m_sendQueueNotificationsOnUpload = sendQueueNotificationsOnUpload;
+
             Initialise(storageAccount, containerName);
         }
 
@@ -337,8 +342,6 @@
             }
         }
 
-        internal const string CONTAINER_PLACEHOLDER_FILENAME = "$$$.$$$";
-
         public bool CreateDirectory(string path)
         {
             path = path.ToAzurePath();
@@ -512,7 +515,7 @@
         /// <param name="filePath">the path of the new file</param>
         public void UploadNotification(string filePath)
         {
-            if (!StorageProviderConfiguration.QueueNotification)
+            if (!this.m_sendQueueNotificationsOnUpload)
                 return;
 
             // Create the queue client

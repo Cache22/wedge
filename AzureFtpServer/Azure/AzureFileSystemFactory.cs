@@ -8,13 +8,15 @@ namespace AzureFtpServer.Azure
         #region Member variables
         private AccountManager m_accountManager;
         private string m_storageAccount;
+        private bool m_sendQueueNotificationsOnUpload;
         #endregion
 
         #region Construction
         
-        public AzureFileSystemFactory(string storageAccount)
+        public AzureFileSystemFactory(string storageAccount, bool sendQueueNotificationsOnUpload)
         {
             this.m_storageAccount = storageAccount;
+            this.m_sendQueueNotificationsOnUpload = sendQueueNotificationsOnUpload;
             m_accountManager = new AccountManager();
             m_accountManager.LoadConfigration();
         }
@@ -31,7 +33,10 @@ namespace AzureFtpServer.Azure
                 return null;
             
             string containerName = sUser;
-            var system = new AzureFileSystem(m_storageAccount, containerName);
+            var system = new AzureFileSystem(
+                storageAccount: m_storageAccount, 
+                containerName: containerName, 
+                sendQueueNotificationsOnUpload: m_sendQueueNotificationsOnUpload);
             
             return system;
         }

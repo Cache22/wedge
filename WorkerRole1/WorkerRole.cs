@@ -21,7 +21,6 @@
             StorageProviderConfiguration.Mode = (Modes)Enum.Parse(typeof(Modes), RoleEnvironment.GetConfigurationSettingValue("Mode"));
             StorageProviderConfiguration.FtpAccount = RoleEnvironment.GetConfigurationSettingValue("FtpAccount");
             StorageProviderConfiguration.FtpServerHost = RoleEnvironment.GetConfigurationSettingValue("FtpServerHost");
-            StorageProviderConfiguration.QueueNotification = bool.Parse(RoleEnvironment.GetConfigurationSettingValue("QueueNotification"));
 
             if (StorageProviderConfiguration.Mode == Modes.Live)
                 ConfigureDiagnosticsV1_4();
@@ -33,7 +32,8 @@
             if (_server == null)
                 _server = new FtpServer(
                     fileSystemClassFactory: new AzureFileSystemFactory(
-                            storageAccount: RoleEnvironment.GetConfigurationSettingValue("StorageAccount")),
+                            storageAccount: RoleEnvironment.GetConfigurationSettingValue("StorageAccount"),
+                            sendQueueNotificationsOnUpload: bool.Parse(RoleEnvironment.GetConfigurationSettingValue("QueueNotification"))),
                         ftpEndpoint: RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTP"].IPEndpoint, 
                         pasvEndpoint: RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTPPASV"].IPEndpoint,
                         maxClients: int.Parse(RoleEnvironment.GetConfigurationSettingValue("MaxClients")),
