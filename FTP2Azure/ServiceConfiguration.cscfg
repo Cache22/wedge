@@ -8,7 +8,6 @@
       <!-- Ftp server site, used to get its ipv4 ip, e.g. xxx.cloudapp.net-->
       <Setting name="FtpServerHost" value="localhost" />
       <Setting name="MaxClients" value="5" />
-
       <!-- Ftp Server Account Management -->
       <!-- Format: name="FtpAccount", value="(username1:password1)(username2:password2)..." -->
       <!-- Username will be used as container name in Azure Blob, password must not contain ')' -->
@@ -16,6 +15,7 @@
       <Setting name="ConnectionEncoding" value="UTF8" />
       <Setting name="MaxIdleSeconds" value="60" />
       <Setting name="QueueNotification" value="true" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>

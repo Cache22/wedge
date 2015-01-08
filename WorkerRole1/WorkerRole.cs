@@ -10,6 +10,8 @@
     using AzureFtpServer.Azure;
     using AzureFtpServer.Ftp;
     using AzureFtpServer.Provider;
+    using Microsoft.WindowsAzure;
+    using Microsoft.WindowsAzure.Diagnostics;
 
     public class WorkerRole : RoleEntryPoint
     {
@@ -19,8 +21,6 @@
 
             // Set the maximum number of concurrent connections, no use?
             //ServicePointManager.DefaultConnectionLimit = 12;
-
-            ConfigureDiagnosticsV1_4();
 
             // For information on handling configuration changes
             // see the MSDN topic at http://go.microsoft.com/fwlink/?LinkId=166357.
@@ -74,42 +74,6 @@
                 // Set e.Cancel to true to restart this role instance
                 e.Cancel = true;
             }
-        }
-
-        private static void ConfigureDiagnosticsV1_4()
-        {
-            //DiagnosticMonitorTraceListener tmpListener = new DiagnosticMonitorTraceListener();
-            //Trace.Listeners.Add(tmpListener);
-
-            //CloudStorageAccount cloudStorageAccount = CloudStorageAccount.Parse(
-            //    RoleEnvironment.GetConfigurationSettingValue("Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString"));
-
-            //var manager = cloudStorageAccount.CreateRoleInstanceDiagnosticManager(
-            //    RoleEnvironment.DeploymentId,
-            //    RoleEnvironment.CurrentRoleInstance.Role.Name,
-            //    RoleEnvironment.CurrentRoleInstance.Id);
-
-            //DiagnosticMonitorConfiguration config = manager.GetCurrentConfiguration();
-
-            //config.ConfigurationChangePollInterval = TimeSpan.FromMinutes(1);
-
-            //config.Logs.ScheduledTransferPeriod = TimeSpan.FromMinutes(1D);
-            //config.Logs.ScheduledTransferLogLevelFilter = LogLevel.Undefined;
-
-            //config.Directories.ScheduledTransferPeriod = TimeSpan.FromMinutes(5);
-            
-            //config.WindowsEventLog.DataSources.Add("Application!*");
-            //config.WindowsEventLog.DataSources.Add("System!*");
-            //config.WindowsEventLog.ScheduledTransferPeriod = TimeSpan.FromMinutes(5);
-
-            //PerformanceCounterConfiguration performanceCounterConfiguration = new PerformanceCounterConfiguration();
-            //performanceCounterConfiguration.CounterSpecifier = @"\Processor(_Total)\% Processor Time";
-            //performanceCounterConfiguration.SampleRate = TimeSpan.FromSeconds(10d);
-
-            //config.PerformanceCounters.DataSources.Add(performanceCounterConfiguration);
-            //config.PerformanceCounters.ScheduledTransferPeriod = TimeSpan.FromMinutes(1d);
-
-            //manager.SetCurrentConfiguration(config);
         }
 
         public override void Run()

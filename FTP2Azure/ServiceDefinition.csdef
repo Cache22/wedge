@@ -13,6 +13,7 @@
       <Setting name="FtpServerHost" />
       <Setting name="QueueNotification" />
       <Setting name="MaxIdleSeconds" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
     </ConfigurationSettings>
     <Imports>
     </Imports>
