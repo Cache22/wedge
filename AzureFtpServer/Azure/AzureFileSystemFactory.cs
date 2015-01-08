@@ -7,11 +7,14 @@ namespace AzureFtpServer.Azure
     {
         #region Member variables
         private AccountManager m_accountManager;
+        private string m_storageAccount;
         #endregion
 
         #region Construction
-        public AzureFileSystemFactory()
+        
+        public AzureFileSystemFactory(string storageAccount)
         {
+            this.m_storageAccount = storageAccount;
             m_accountManager = new AccountManager();
             m_accountManager.LoadConfigration();
         }
@@ -27,12 +30,13 @@ namespace AzureFtpServer.Azure
             if (!m_accountManager.CheckAccount(sUser, sPassword))
                 return null;
             
-            string containerName = sUser; 
-            var system = new AzureFileSystem(containerName);
+            string containerName = sUser;
+            var system = new AzureFileSystem(m_storageAccount, containerName);
             
             return system;
         }
 
         #endregion
+
     }
 }

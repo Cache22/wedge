@@ -31,9 +31,9 @@
 
         #region Construction
 
-        public AzureBlobStorageProvider(string containerName)
+        public AzureBlobStorageProvider(string storageAccount, string containerName)
         {
-            Initialise(containerName);
+            Initialise(storageAccount, containerName);
         }
 
         #endregion
@@ -56,7 +56,7 @@
         #endregion
 
         // Initialiser method
-        private void Initialise(string containerName)
+        private void Initialise(string storageAccount, string containerName)
         {
             if (String.IsNullOrEmpty(containerName))
                 throw new ArgumentException("You must provide the base Container Name", "containerName");
@@ -71,7 +71,7 @@
             }
             else
             {
-                _account = CloudStorageAccount.Parse(StorageProviderConfiguration.StorageAccount);
+                _account = CloudStorageAccount.Parse(storageAccount);
                 _blobClient = _account.CreateCloudBlobClient();
                 // _blobClient.ServerTimeout = TimeSpan.FromSeconds(5);
             }

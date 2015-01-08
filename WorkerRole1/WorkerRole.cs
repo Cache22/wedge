@@ -42,7 +42,6 @@
             StorageProviderConfiguration.FtpServerHost = RoleEnvironment.GetConfigurationSettingValue("FtpServerHost");
             StorageProviderConfiguration.MaxIdleSeconds = int.Parse(RoleEnvironment.GetConfigurationSettingValue("MaxIdleSeconds"));
             StorageProviderConfiguration.QueueNotification = bool.Parse(RoleEnvironment.GetConfigurationSettingValue("QueueNotification"));
-            StorageProviderConfiguration.StorageAccount = RoleEnvironment.GetConfigurationSettingValue("StorageAccount");
             StorageProviderConfiguration.ConnectionEncoding = RoleEnvironment.GetConfigurationSettingValue("ConnectionEncoding");
             StorageProviderConfiguration.MaxClients = RoleEnvironment.GetConfigurationSettingValue("MaxClients");
             StorageProviderConfiguration.FTPPASVEndpoint = RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTPPASV"].IPEndpoint;
@@ -56,7 +55,7 @@
             RoleEnvironment.Changing += RoleEnvironmentChanging;
 
             if (_server == null)
-                _server = new FtpServer(new AzureFileSystemFactory());
+                _server = new FtpServer(new AzureFileSystemFactory(RoleEnvironment.GetConfigurationSettingValue("StorageAccount")));
 
             _server.NewConnection += ServerNewConnection;
 

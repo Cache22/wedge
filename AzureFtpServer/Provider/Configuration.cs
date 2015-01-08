@@ -19,8 +19,6 @@
 
         public static System.Net.IPEndPoint FTPPASVEndpoint { get; set; }
 
-        public static string StorageAccount { get; set; }
-
         public static System.Net.IPEndPoint FTPEndpoint { get; set; }
 
         public static string ConnectionEncoding { get; set; }

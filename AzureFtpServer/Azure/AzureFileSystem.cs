@@ -13,11 +13,11 @@ namespace AzureFtpServer.Azure
         private string _containerName;
 
         // Constructor
-        public AzureFileSystem(string containerName)
+        public AzureFileSystem(string storageAccount, string containerName)
         {
             // Set container name (if none specified, specify the development container default)
             _containerName = !string.IsNullOrEmpty(containerName) ? containerName : "DevelopmentContainer";
-            _provider = new AzureBlobStorageProvider(_containerName);
+            _provider = new AzureBlobStorageProvider(storageAccount, _containerName);
         }
 
         #region Implementation of IFileSystem
