@@ -1,17 +1,17 @@
 ﻿namespace FTPServerWorkerRole 
 {
+    using AzureFtpServer.Azure;
+    using AzureFtpServer.Ftp;
+    using AzureFtpServer.Provider;
+    using Microsoft.WindowsAzure;
+    using Microsoft.WindowsAzure.Diagnostics;
+    using Microsoft.WindowsAzure.ServiceRuntime;
     using System;
     using System.Diagnostics;
     using System.Linq;
     using System.Net;
     using System.Net.Sockets;
     using System.Threading;
-    using Microsoft.WindowsAzure.ServiceRuntime;
-    using AzureFtpServer.Azure;
-    using AzureFtpServer.Ftp;
-    using AzureFtpServer.Provider;
-    using Microsoft.WindowsAzure;
-    using Microsoft.WindowsAzure.Diagnostics;
 
     public class WorkerRole : RoleEntryPoint
     {
@@ -46,12 +46,14 @@
                 return IPAddress.None;
             };
 
+            var accounts = AccountManager.ParseOldConfiguration(RoleEnvironment.GetConfigurationSettingValue("FtpAccount"));
+
             if (_server == null)
                 _server = new FtpServer(
                     fileSystemClassFactory: new AzureFileSystemFactory(
                             storageAccount: RoleEnvironment.GetConfigurationSettingValue("StorageAccount"),
                             sendQueueNotificationsOnUpload: bool.Parse(RoleEnvironment.GetConfigurationSettingValue("QueueNotification")),
-                            accountInfo: RoleEnvironment.GetConfigurationSettingValue("FtpAccount")),
+                            accounts: accounts),
                         ftpEndpoint: RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTP"].IPEndpoint, 
                         pasvEndpoint: RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTPPASV"].IPEndpoint,
                         localAddress: getLocalAddress(),
@@ -94,7 +96,6 @@
                     _server.Start();
                     Trace.WriteLine("Server starting.", "Control");
                 }
-
             }
         }
     }
