@@ -1,1 +1,10 @@
 /packages
+/AzureFtpServer/obj
+/AzureFtpServer/bin
+/WorkerRole1/bin
+/WorkerRole1/obj
+/FTP2Azure/csx
+/FTP2Azure/obj
+/FTP2Azure/bin
+/*.suo
+/FTP2Azure/*.user

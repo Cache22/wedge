@@ -6,7 +6,7 @@ using System.Threading;
 using System.Diagnostics;
 using AzureFtpServer.Ftp.FileSystem;
 using AzureFtpServer.General;
-using Microsoft.WindowsAzure.ServiceRuntime;
+using AzureFtpServer.Provider;
 
 namespace AzureFtpServer.Ftp
 {
@@ -102,7 +102,7 @@ namespace AzureFtpServer.Ftp
             FtpServerMessageHandler.Message += TraceMessage;
 
             // listen at the port by the "FTP" endpoint setting
-            System.Net.IPEndPoint ipEndPoint = RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTP"].IPEndpoint;
+            System.Net.IPEndPoint ipEndPoint = StorageProviderConfiguration.FTPEndpoint;
             m_socketListen = SocketHelpers.CreateTcpListener(ipEndPoint);
 
             if (m_socketListen != null)
@@ -166,7 +166,7 @@ namespace AzureFtpServer.Ftp
         /// </summary>
         private void InitialiseConnectionEncoding()
         {
-            string encoding = RoleEnvironment.GetConfigurationSettingValue("ConnectionEncoding");
+            string encoding = StorageProviderConfiguration.ConnectionEncoding;
             switch (encoding)
             {
                 case "ASCII":
@@ -187,7 +187,7 @@ namespace AzureFtpServer.Ftp
         /// </summary>
         private void InitialiseMaxClients()
         {
-            string maxClients = RoleEnvironment.GetConfigurationSettingValue("MaxClients");
+            string maxClients = StorageProviderConfiguration.MaxClients;
 
             int iMaxClients = 5;
             

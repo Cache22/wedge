@@ -1,18 +1,17 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using AzureFtpServer.Azure;
-using AzureFtpServer.Ftp;
-using AzureFtpServer.Provider;
-using Microsoft.WindowsAzure;
-using Microsoft.WindowsAzure.Diagnostics;
-using Microsoft.WindowsAzure.Diagnostics.Management;
-using Microsoft.WindowsAzure.ServiceRuntime;
+﻿namespace FTPServerRole 
+{
+    using AzureFtpServer.Azure;
+    using AzureFtpServer.Ftp;
+    using AzureFtpServer.Provider;
+    using Microsoft.WindowsAzure.ServiceRuntime;
+    using System;
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Threading;
 
-namespace FTPServerRole {
-    public class WorkerRole : RoleEntryPoint {
+
+    public class WorkerRole : RoleEntryPoint
+    {
         private FtpServer _server;
 
         public override void Run() {
@@ -37,7 +36,18 @@ namespace FTPServerRole {
 
             // Set the maximum number of concurrent connections, no use?
             //ServicePointManager.DefaultConnectionLimit = 12;
-            
+
+            StorageProviderConfiguration.Mode = (Modes)Enum.Parse(typeof(Modes), RoleEnvironment.GetConfigurationSettingValue("Mode"));
+            StorageProviderConfiguration.FtpAccount = RoleEnvironment.GetConfigurationSettingValue("FtpAccount");
+            StorageProviderConfiguration.FtpServerHost = RoleEnvironment.GetConfigurationSettingValue("FtpServerHost");
+            StorageProviderConfiguration.MaxIdleSeconds = int.Parse(RoleEnvironment.GetConfigurationSettingValue("MaxIdleSeconds"));
+            StorageProviderConfiguration.QueueNotification = bool.Parse(RoleEnvironment.GetConfigurationSettingValue("QueueNotification"));
+            StorageProviderConfiguration.StorageAccount = RoleEnvironment.GetConfigurationSettingValue("StorageAccount");
+            StorageProviderConfiguration.ConnectionEncoding = RoleEnvironment.GetConfigurationSettingValue("ConnectionEncoding");
+            StorageProviderConfiguration.MaxClients = RoleEnvironment.GetConfigurationSettingValue("MaxClients");
+            StorageProviderConfiguration.FTPPASVEndpoint = RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTPPASV"].IPEndpoint;
+            StorageProviderConfiguration.FTPEndpoint = RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTP"].IPEndpoint;
+
             if (StorageProviderConfiguration.Mode == Modes.Live)
                 ConfigureDiagnosticsV1_4();
 

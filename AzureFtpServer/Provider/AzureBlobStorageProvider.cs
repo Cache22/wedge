@@ -11,7 +11,6 @@
     using AzureFtpServer.Azure;
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Blob;
-    using Microsoft.WindowsAzure.ServiceRuntime;
     using Microsoft.WindowsAzure.Storage.Queue;
 
     public class StorageProviderEventArgs : EventArgs
@@ -72,7 +71,7 @@
             }
             else
             {
-                _account = CloudStorageAccount.Parse(RoleEnvironment.GetConfigurationSettingValue("StorageAccount"));
+                _account = CloudStorageAccount.Parse(StorageProviderConfiguration.StorageAccount);
                 _blobClient = _account.CreateCloudBlobClient();
                 // _blobClient.ServerTimeout = TimeSpan.FromSeconds(5);
             }

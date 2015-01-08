@@ -1,56 +1,30 @@
-﻿using Microsoft.WindowsAzure.ServiceRuntime;
-using System;
-using System.Configuration;
-
-namespace AzureFtpServer.Provider
+﻿namespace AzureFtpServer.Provider
 {
+    using System;
+    using System.Configuration;
+
     public enum Modes
     {
         Live,
         Debug
     }
 
-    public class StorageProviderConfiguration
+    public static class StorageProviderConfiguration
     {
-        
-        public static string FtpAccount
-        {
-            get
-            {
-                return RoleEnvironment.GetConfigurationSettingValue("FtpAccount");
-            }
-        }
+        public static string FtpAccount { get; set; }
+        public static Modes Mode { get; set; }
+        public static bool QueueNotification { get; set; }
+        public static int MaxIdleSeconds { get; set; }
+        public static string FtpServerHost { get; set; }
 
-        public static Modes Mode
-        {
-            get
-            {
-                return (Modes)Enum.Parse(typeof(Provider.Modes), RoleEnvironment.GetConfigurationSettingValue("Mode"));
-            }
-        }
+        public static System.Net.IPEndPoint FTPPASVEndpoint { get; set; }
 
-        public static bool QueueNotification
-        {
-            get
-            {
-                return bool.Parse(RoleEnvironment.GetConfigurationSettingValue("QueueNotification"));
-            }
-        }
+        public static string StorageAccount { get; set; }
 
-        public static int MaxIdleSeconds
-        {
-            get
-            {
-                return int.Parse(RoleEnvironment.GetConfigurationSettingValue("MaxIdleSeconds"));
-            }
-        }
+        public static System.Net.IPEndPoint FTPEndpoint { get; set; }
 
-        public static string FtpServerHost
-        {
-            get
-            {
-                return RoleEnvironment.GetConfigurationSettingValue("FtpServerHost");
-            }
-        }
+        public static string ConnectionEncoding { get; set; }
+
+        public static string MaxClients { get; set; }
     }
 }
