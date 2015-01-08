@@ -41,7 +41,6 @@
                     Thread.Sleep(TimeSpan.FromSeconds(10));
                     Console.WriteLine("Server starting.");
                 }
-
             }
         }
     }
