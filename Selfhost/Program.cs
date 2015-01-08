@@ -26,7 +26,8 @@
 
             _server.NewConnection += (nId) => Console.WriteLine("Connection {0} accepted", nId);
 
-            users.Add("container1", "test1");
+            // https://twitter.com/chgeuer/status/551842591449571329
+            users.Add("user", "pass");
             users.Add("$root", "testroot");
 
             while (true)
