@@ -8,8 +8,8 @@
     <ProjectGuid>{19D55950-ED17-46EF-85BC-78690CD6AE4E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FTPServerRole</RootNamespace>
-    <AssemblyName>FTPServerRole</AssemblyName>
+    <RootNamespace>FTPServerWorkerRole</RootNamespace>
+    <AssemblyName>FTPServerWorkerRole</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <PlatformTarget>AnyCPU</PlatformTarget>

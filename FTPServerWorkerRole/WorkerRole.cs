@@ -1,4 +1,4 @@
-﻿namespace FTPServerRole 
+﻿namespace FTPServerWorkerRole 
 {
     using System;
     using System.Diagnostics;

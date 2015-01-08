@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "FTP2Azure", "FTP2Azure\FTP2Azure.ccproj", "{97D0D7B0-C0FF-458C-A74B-FD0A84AF20AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTPServerRole", "WorkerRole1\FTPServerRole.csproj", "{19D55950-ED17-46EF-85BC-78690CD6AE4E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTPServerWorkerRole", "FTPServerWorkerRole\FTPServerWorkerRole.csproj", "{19D55950-ED17-46EF-85BC-78690CD6AE4E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureFtpServer", "AzureFtpServer\AzureFtpServer.csproj", "{A6520CEB-6E55-4C9D-B581-64E432DB16D0}"
 EndProject

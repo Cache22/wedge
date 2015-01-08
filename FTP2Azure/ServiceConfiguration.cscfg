@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ServiceConfiguration serviceName="FTP2Azure" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" schemaVersion="2014-06.2.4">
-  <Role name="FTPServerRole">
+  <Role name="FTPServerWorkerRole">
     <Instances count="1" />
     <ConfigurationSettings>
       <!-- Azure Storage Account  -->
