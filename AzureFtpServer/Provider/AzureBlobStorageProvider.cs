@@ -303,9 +303,7 @@
         /// <returns></returns>
         public StorageOperationResult Rename(string originalPath, string newPath)
         {
-            ICloudBlob newBlob = _container.GetBlobReferenceFromServer(newPath.ToAzurePath());
             ICloudBlob originalBlob = _container.GetBlobReferenceFromServer(originalPath.ToAzurePath());
-
             // Check if the original path exists on the provider.
             if (!IsValidFile(originalPath))
             {
@@ -313,6 +311,7 @@
                                                 originalPath);
             }
 
+            ICloudBlob newBlob = _container.GetBlockBlobReference(newPath.ToAzurePath());
             var copyId = newBlob.StartCopyFromBlob(originalBlob.Uri);
             while (newBlob.CopyState.Status == CopyStatus.Pending)
             {
@@ -422,6 +421,32 @@
             }
 
             return true;
+        }
+
+        internal bool Exists(string filePath)
+        {
+            if (filePath == null)
+                return false;
+
+            // error check
+            if (filePath.EndsWith(@"/"))
+            {
+                Trace.WriteLine(string.Format("Invalid parameter {0} for function IsValidFile", filePath), "Error");
+                return false;
+            }
+
+            // remove the first '/' char
+            string fileBlobPath = filePath.ToAzurePath();
+
+            try
+            {
+                var blob = _container.GetBlockBlobReference(fileBlobPath);
+                return blob.Exists();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -598,5 +623,6 @@
         }
 
         #endregion
+
     }
 }

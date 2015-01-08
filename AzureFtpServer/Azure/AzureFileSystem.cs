@@ -98,7 +98,7 @@ namespace AzureFtpServer.Azure
         /// <returns></returns>
         public bool FileExists(string sPath)
         {
-            return _provider.IsValidFile(sPath);
+            return _provider.Exists(sPath);
         }
 
         public bool CreateDirectory(string sPath)
