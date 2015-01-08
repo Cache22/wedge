@@ -23,6 +23,7 @@ namespace AzureFtpServer.Ftp
         private FtpConnectionObject m_theCommands;
         private TcpClient m_theSocket;
         private IPEndPoint m_pasvEndpoint;
+        private IPAddress m_localAddress;
         private Thread m_theThread;
         private Thread m_theMonitorThread;
         private static DateTime m_lastActiveTime; // shared between threads
@@ -44,11 +45,12 @@ namespace AzureFtpServer.Ftp
 
         #region Construction
 
-        public FtpSocketHandler(IFileSystemClassFactory fileSystemClassFactory, int nId, IPEndPoint pasvEndpoint, int maxIdleSeconds)
+        public FtpSocketHandler(IFileSystemClassFactory fileSystemClassFactory, int nId, IPEndPoint pasvEndpoint, IPAddress localAddress,  int maxIdleSeconds)
         {
             m_nId = nId;
             m_fileSystemClassFactory = fileSystemClassFactory;
             this.m_pasvEndpoint = pasvEndpoint;
+            this.m_localAddress = localAddress;
             this.m_maxIdleSeconds = maxIdleSeconds;
         }
 
@@ -60,7 +62,9 @@ namespace AzureFtpServer.Ftp
         {
             m_theSocket = socket;
             m_lastActiveTime = DateTime.Now;
-            m_theCommands = new FtpConnectionObject(m_fileSystemClassFactory, m_nId, socket, pasvEndpoint: this.m_pasvEndpoint);
+            m_theCommands = new FtpConnectionObject(m_fileSystemClassFactory, m_nId, socket, 
+                pasvEndpoint: this.m_pasvEndpoint, 
+                localAddress: this.m_localAddress);
             m_theCommands.Encoding = encoding;
             m_theThread = new Thread(ThreadRun);
             m_theThread.Start();

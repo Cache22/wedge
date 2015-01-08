@@ -29,6 +29,7 @@ namespace AzureFtpServer.Ftp
         private int m_maxClients;
         private IPEndPoint m_pasvEndpoint;
         private IPEndPoint m_ftpEndpoint;
+        private IPAddress m_localAddress;
         private int m_maxIdleSeconds;
 
         #endregion
@@ -49,12 +50,13 @@ namespace AzureFtpServer.Ftp
         #region Construction
 
         public FtpServer(IFileSystemClassFactory fileSystemClassFactory, IPEndPoint ftpEndpoint, IPEndPoint pasvEndpoint, 
-            int maxClients, int maxIdleSeconds, string connectionEncoding)
+            IPAddress localAddress, int maxClients, int maxIdleSeconds, string connectionEncoding)
         {
             m_apConnections = new ArrayList();
             m_fileSystemClassFactory = fileSystemClassFactory;
             this.m_ftpEndpoint = ftpEndpoint;
             this.m_pasvEndpoint = pasvEndpoint;
+            this.m_localAddress = localAddress;
             this.m_maxClients = maxClients;
             this.m_maxIdleSeconds = maxIdleSeconds;
 
@@ -189,6 +191,7 @@ namespace AzureFtpServer.Ftp
         {
             var handler = new FtpSocketHandler(m_fileSystemClassFactory, m_nId, 
                 pasvEndpoint: this.m_pasvEndpoint, 
+                localAddress: this.m_localAddress,
                 maxIdleSeconds: this.m_maxIdleSeconds);
             
             // get encoding for the socket connection

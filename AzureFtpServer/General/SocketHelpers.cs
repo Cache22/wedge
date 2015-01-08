@@ -125,23 +125,7 @@ namespace AzureFtpServer.General
             return listener;
         }
 
-        public static IPAddress GetLocalAddress()
-        {
-            string ftpHost = null;
-            if (StorageProviderConfiguration.Mode == Modes.Live)
-                ftpHost = StorageProviderConfiguration.FtpServerHost;
-            else
-                ftpHost = "localhost";
-            IPHostEntry hostEntry = Dns.GetHostEntry(ftpHost);
-            IPAddress retAddress = null;
-            foreach (var ip in hostEntry.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                    retAddress = ip;
-            }
-
-            return retAddress;
-        }
+       
 
         public static int CopyStreamAscii(Stream input, Stream output, int bufferSize)
         {

@@ -13,7 +13,5 @@
     {
         public static string FtpAccount { get; set; }
         public static Modes Mode { get; set; }
-        // public static bool QueueNotification { get; set; }
-        public static string FtpServerHost { get; set; }
     }
 }

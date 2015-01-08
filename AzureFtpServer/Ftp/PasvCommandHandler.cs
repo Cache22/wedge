@@ -13,14 +13,18 @@ namespace AzureFtpServer.FtpCommands
     /// </summary>
     internal class PasvCommandHandler : FtpCommandHandler
     {
-        private IPEndPoint m_pasvEndpoint;
+        private readonly IPEndPoint m_pasvEndpoint;
+        private readonly IPAddress m_localAddress;
 
         // This command maybe won't work if the ftp server is deployed locally <= firewall
-        public PasvCommandHandler(FtpConnectionObject connectionObject, IPEndPoint pasvEndpoint)
+        public PasvCommandHandler(FtpConnectionObject connectionObject, IPEndPoint pasvEndpoint, IPAddress localAddress)
             : base("PASV", connectionObject)
         {
+            if (localAddress == null) throw new ArgumentNullException("localAddress", "The ftp server do not have a ipv4 address");
+
             // set passive listen port
             this.m_pasvEndpoint = pasvEndpoint;
+            this.m_localAddress = localAddress;
         }
 
         protected override string OnProcess(string sMessage)
@@ -54,9 +58,7 @@ namespace AzureFtpServer.FtpCommands
         private string GetPassiveAddressInfo()
         {
             // get local ipv4 ip
-            IPAddress ipAddress = SocketHelpers.GetLocalAddress();
-            if (ipAddress == null)
-                throw new Exception("The ftp server do not have a ipv4 address");
+            IPAddress ipAddress = this.m_localAddress;
             string retIpPort = ipAddress.ToString();
             retIpPort = retIpPort.Replace('.', ',');
 
@@ -68,5 +70,7 @@ namespace AzureFtpServer.FtpCommands
 
             return retIpPort;
         }
+
+       
     }
 }

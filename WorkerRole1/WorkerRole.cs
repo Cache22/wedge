@@ -1,13 +1,15 @@
 ﻿namespace FTPServerRole 
 {
-    using AzureFtpServer.Azure;
-    using AzureFtpServer.Ftp;
-    using AzureFtpServer.Provider;
-    using Microsoft.WindowsAzure.ServiceRuntime;
     using System;
     using System.Diagnostics;
     using System.Linq;
+    using System.Net;
+    using System.Net.Sockets;
     using System.Threading;
+    using Microsoft.WindowsAzure.ServiceRuntime;
+    using AzureFtpServer.Azure;
+    using AzureFtpServer.Ftp;
+    using AzureFtpServer.Provider;
 
     public class WorkerRole : RoleEntryPoint
     {
@@ -20,7 +22,6 @@
 
             StorageProviderConfiguration.Mode = (Modes)Enum.Parse(typeof(Modes), RoleEnvironment.GetConfigurationSettingValue("Mode"));
             StorageProviderConfiguration.FtpAccount = RoleEnvironment.GetConfigurationSettingValue("FtpAccount");
-            StorageProviderConfiguration.FtpServerHost = RoleEnvironment.GetConfigurationSettingValue("FtpServerHost");
 
             if (StorageProviderConfiguration.Mode == Modes.Live)
                 ConfigureDiagnosticsV1_4();
@@ -29,6 +30,24 @@
             // see the MSDN topic at http://go.microsoft.com/fwlink/?LinkId=166357.
             RoleEnvironment.Changing += RoleEnvironmentChanging;
 
+            Func<IPAddress> getLocalAddress = () => 
+            {
+                string ftpHost = null;
+                if (StorageProviderConfiguration.Mode == Modes.Live)
+                    ftpHost = RoleEnvironment.GetConfigurationSettingValue("FtpServerHost");
+                else
+                    ftpHost = "localhost";
+                IPHostEntry hostEntry = Dns.GetHostEntry(ftpHost);
+                IPAddress localAddress = null;
+                foreach (var ip in hostEntry.AddressList)
+                {
+                    if (ip.AddressFamily == AddressFamily.InterNetwork)
+                        localAddress = ip;
+                }
+                return localAddress;
+            };
+
+
             if (_server == null)
                 _server = new FtpServer(
                     fileSystemClassFactory: new AzureFileSystemFactory(
@@ -36,6 +55,7 @@
                             sendQueueNotificationsOnUpload: bool.Parse(RoleEnvironment.GetConfigurationSettingValue("QueueNotification"))),
                         ftpEndpoint: RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTP"].IPEndpoint, 
                         pasvEndpoint: RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTPPASV"].IPEndpoint,
+                        localAddress: getLocalAddress(),
                         maxClients: int.Parse(RoleEnvironment.GetConfigurationSettingValue("MaxClients")),
                         maxIdleSeconds: int.Parse(RoleEnvironment.GetConfigurationSettingValue("MaxIdleSeconds")),
                         connectionEncoding: RoleEnvironment.GetConfigurationSettingValue("ConnectionEncoding"));
