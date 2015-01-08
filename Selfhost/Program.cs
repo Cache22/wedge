@@ -42,19 +42,18 @@
                 return IPAddress.None;
             };
 
-
-            Func<Dictionary<string, string>> GetUsers = () =>
+            Func<Func<string, string, bool>> CheckAccount = () =>
             {
                 var json = File.ReadAllText(cfg("userfile"));
-                var dict = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                return dict;
+                var users = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                return (u, p) => users.ContainsKey(u) && users[u] == p;
             };
 
             var _server = new FtpServer(
                 fileSystemClassFactory: new AzureFileSystemFactory(
                         storageAccount: cfg("StorageAccount"),
                         sendQueueNotificationsOnUpload: bool.Parse(cfg("QueueNotification")),
-                        accounts: GetUsers()),
+                        checkAccount: CheckAccount()),
                     ftpEndpoint: endpoint("FTP"),
                     pasvEndpoint: endpoint("FTPPASV"),
                     localAddress: getLocalAddress(),
