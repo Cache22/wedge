@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using AzureFtpServer.Provider;
@@ -10,38 +11,38 @@ namespace AzureFtpServer.Ftp
     /// AccountManager Class
     /// Read account information from config settings and store valid (username,password) pairs
     /// </summary>
-    class AccountManager
+    public class AccountManager
     {
-        #region Member Variables
-
-        private const char separator = ':';
-        private Dictionary<string, string> _accounts = new Dictionary<string, string>();
-        
-        #endregion
+        public readonly Func<string, string, bool> CheckAccount;
 
         #region Construction
 
+        public AccountManager(Func<string, string, bool> checkAccount)
+        {
+            if (checkAccount == null) throw new ArgumentNullException("checkAccount");
+
+            this.CheckAccount = checkAccount;
+        }
+
+        public AccountManager(Dictionary<string, string> accounts)
+        {
+            this.CheckAccount = (u, p) => accounts.ContainsKey(u) && accounts[u] == p;
+        }
+
         public AccountManager(string accountInfo)
         {
-            this.LoadConfigration(accountInfo);
+            Dictionary<string, string> accounts =  AccountManager.ParseOldConfiguration(accountInfo);
+
+            this.CheckAccount = (u, p) => accounts.ContainsKey(u) && accounts[u] == p;
         }
 
         #endregion
 
-        #region Methods
-
-        /// <summary>
-        /// Read the settings in RoleEnvironment, insert into the accounts dictionary
-        /// </summary>
-        /// <returns></returns>
-        public int LoadConfigration(string accountInfo)
+        public static Dictionary<string, string> ParseOldConfiguration(string accountInfo)
         {
-            // init member vars 
-            _accounts.Clear();
+            const char separator = ':';
 
-            //int idx = 1; // use idx to concat the setting name
-            
-            //bool hasNext = true; // bool value, need find the next setting
+            var _accounts = new Dictionary<string, string>();
 
             while (true)
             {
@@ -90,21 +91,8 @@ namespace AzureFtpServer.Ftp
             }
 
             Trace.WriteLine(string.Format("Load {0} accounts.", _accounts.Count), "Information");
-            
-            return _accounts.Count;
-        }
 
-        /// <summary>
-        /// Checks if (username, password) is a valid account
-        /// </summary>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
-        public bool CheckAccount(string username, string password)
-        {
-            if (!_accounts.ContainsKey(username))
-                return false;
-            return (_accounts[username] == password);
+            return _accounts;
         }
 
         /// <summary>
@@ -117,14 +105,10 @@ namespace AzureFtpServer.Ftp
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        private bool CheckUsername(string username)
+        private static bool CheckUsername(string username)
         {
-            if (!Regex.IsMatch(username, @"^\$root$|^[a-z0-9]([a-z0-9]|(?<=[a-z0-9])-(?=[a-z0-9])){2,62}$"))
-                return false;
-
-            return true;
+            return Regex.IsMatch(username, 
+                @"^\$root$|^[a-z0-9]([a-z0-9]|(?<=[a-z0-9])-(?=[a-z0-9])){2,62}$");
         }
-
-        #endregion
     }
 }
