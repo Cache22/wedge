@@ -22,17 +22,16 @@
             // Set the maximum number of concurrent connections, no use?
             //ServicePointManager.DefaultConnectionLimit = 12;
 
-            // For information on handling configuration changes
-            // see the MSDN topic at http://go.microsoft.com/fwlink/?LinkId=166357.
             RoleEnvironment.Changing += RoleEnvironmentChanging;
 
+            Func<string, string> cfg = RoleEnvironment.GetConfigurationSettingValue;
+            Func<string, IPEndPoint> endpoint = name => RoleEnvironment.CurrentRoleInstance.InstanceEndpoints[name].IPEndpoint;
             Func<IPAddress> getLocalAddress = () => 
             {
-                string ftpHost = RoleEnvironment.GetConfigurationSettingValue("FtpServerHost");
+                string ftpHost = cfg("FtpServerHost");
 
                 if (ftpHost.ToLower() == "localhost") 
                     return IPAddress.Loopback;
-
 
                 foreach (var ip in Dns.GetHostEntry(ftpHost).AddressList)
                 {
@@ -46,20 +45,18 @@
                 return IPAddress.None;
             };
 
-            var accounts = AccountManager.ParseOldConfiguration(RoleEnvironment.GetConfigurationSettingValue("FtpAccount"));
-
             if (_server == null)
                 _server = new FtpServer(
                     fileSystemClassFactory: new AzureFileSystemFactory(
-                            storageAccount: RoleEnvironment.GetConfigurationSettingValue("StorageAccount"),
-                            sendQueueNotificationsOnUpload: bool.Parse(RoleEnvironment.GetConfigurationSettingValue("QueueNotification")),
-                            accounts: accounts),
-                        ftpEndpoint: RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTP"].IPEndpoint, 
-                        pasvEndpoint: RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTPPASV"].IPEndpoint,
+                            storageAccount: cfg("StorageAccount"),
+                            sendQueueNotificationsOnUpload: bool.Parse(cfg("QueueNotification")),
+                            accounts: AccountManager.ParseOldConfiguration(cfg("FtpAccount"))),
+                        ftpEndpoint: endpoint("FTP"),
+                        pasvEndpoint: endpoint("FTPPASV"),
                         localAddress: getLocalAddress(),
-                        maxClients: int.Parse(RoleEnvironment.GetConfigurationSettingValue("MaxClients")),
-                        maxIdleTime: TimeSpan.FromSeconds(int.Parse(RoleEnvironment.GetConfigurationSettingValue("MaxIdleSeconds"))),
-                        connectionEncoding: RoleEnvironment.GetConfigurationSettingValue("ConnectionEncoding"));
+                        maxClients: cfg("MaxClients").ToInt(),
+                        maxIdleTime: TimeSpan.FromSeconds(cfg("MaxIdleSeconds").ToInt()),
+                        connectionEncoding: cfg("ConnectionEncoding"));
 
             _server.NewConnection += ServerNewConnection;
 
@@ -98,5 +95,11 @@
                 }
             }
         }
+    }
+
+    public static class ParsingExtensions
+    {
+        public static bool ToBool(this string value) { return bool.Parse(value); }
+        public static int ToInt(this string value) { return int.Parse(value); }
     }
 }
