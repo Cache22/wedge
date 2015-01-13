@@ -20,9 +20,5 @@
         </AllocatePublicPortFrom>
       </InstanceInputEndpoint>
     </Endpoints>
-    <Imports>
-      <Import moduleName="RemoteAccess" />
-      <Import moduleName="RemoteForwarder" />
-    </Imports>
   </WorkerRole>
 </ServiceDefinition>

@@ -11,14 +11,6 @@
       <Setting name="FtpServerHost" value="localhost" />
       <Setting name="QueueNotification" value="false" />
       <Setting name="MaxIdleSeconds" value="300" />
-      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="true" />
-      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountUsername" value="chgeuer" />
-      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountEncryptedPassword" value="MIIBnQYJKoZIhvcNAQcDoIIBjjCCAYoCAQAxggFOMIIBSgIBADAyMB4xHDAaBgNVBAMME1dpbmRvd3MgQXp1cmUgVG9vbHMCEFzUWla1GmiYTIw/Y5oy4mgwDQYJKoZIhvcNAQEBBQAEggEAVOR7val5zQbS2ik1JXNtn32vne9fvpgyb7ZNYV9Tw4qwWTuzOk7QcHAQ0iJ7JPBtNB/fGOE1WCykrNP3Kg8t/we5nqb4eqNbKLpt1YOf8lT2Wv1nLvuKwZAvA9KblsSrxl8urFcVGsGwoAubb/kyjigR/Ujn4j3rslOK7ZjRQ5WD4ic+FA3iVu/Nm6aDE5CpaR0R6xV4bOQwLFibRYfawwB76atZOWjuE9z+t+xdgunamdLp1KHNjGwNKij9UDxU13VHjpgVLvhnQPDC01ERslFrU3fiUR4vd9bDT12PLoxSd/1lzoPGe2pzw5cN4RGpRq9wGKacoLYrwkXlouIZUjAzBgkqhkiG9w0BBwEwFAYIKoZIhvcNAwcECKzJHytXYKtSgBDF5kZpX+DZrVxtJ5bO6NWB" />
-      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountExpiration" value="2016-01-12T23:59:59.0000000+01:00" />
-      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteForwarder.Enabled" value="true" />
     </ConfigurationSettings>
-    <Certificates>
-      <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="6C97282853907A3CE7FA913A939FD898B25FABD7" thumbprintAlgorithm="sha1" />
-    </Certificates>
   </Role>
 </ServiceConfiguration>
