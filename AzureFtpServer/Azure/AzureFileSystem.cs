@@ -77,7 +77,13 @@ namespace AzureFtpServer.Azure
         public string[] GetDirectories(string sDirPath)
         {
             IEnumerable<CloudBlobDirectory> directories = _provider.GetDirectoryListing(sDirPath);
-            string[] result =  directories.Select(r => r.Uri.AbsolutePath.ToString()).ToArray().ToFtpPath(sDirPath);
+            
+            string[] result =  directories
+                .Select(r => r.Uri.AbsolutePath)
+                .Select(System.Uri.UnescapeDataString)
+                .ToArray()
+                .ToFtpPath(sDirPath);
+
             return result;
         }
 
