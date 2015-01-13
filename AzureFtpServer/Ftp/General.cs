@@ -1,14 +1,19 @@
-using System;
-using System.Diagnostics;
-using System.Text;
-
 namespace AzureFtpServer.Ftp.General
 {
+    using System;
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Text;
+
     /// <summary>
     /// Helper functions relating to files and file names/paths
     /// </summary>
     public class FileNameHelpers
     {
+        //A blob name can contain any combination of characters, except reserved URL characters
+        //Notice: '/' is a URL reserved char, but in Azure blob can be used for virtual dir
+        static readonly char[] validSpecialChars = @"' $-_.+!*()[]=/".ToCharArray();
+
         /// <summary>
         /// Check if a blobname(blob or virtual directory) is valid
         /// </summary>
@@ -20,13 +25,9 @@ namespace AzureFtpServer.Ftp.General
             if ((sFileName.Length == 0) || sFileName.Length > 1024)
                 return false;
 
-            //A blob name can contain any combination of characters, except reserved URL characters
-            //Notice: '/' is a URL reserved char, but in Azure blob can be used for virtual dir
-            string validSpecialChars = @"'öäüßÖÄÜ $-_.+!*()/";
-
             foreach (char c in sFileName)
             {
-                if (!(char.IsLetterOrDigit(c) || validSpecialChars.IndexOf(c) >= 0))
+                if (!(char.IsLetterOrDigit(c) || validSpecialChars.Contains(c)))
                     return false;
             }
 

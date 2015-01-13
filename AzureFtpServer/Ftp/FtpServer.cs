@@ -27,9 +27,9 @@ namespace AzureFtpServer.Ftp
         private bool m_started = false;
         private Encoding m_encoding;
         private int m_maxClients;
-        private IPEndPoint m_pasvEndpoint;
         private IPEndPoint m_ftpEndpoint;
-        private IPAddress m_localAddress;
+        private IPEndPoint m_localPasvEndpoint;
+        private IPEndPoint m_externallyVisiblePasvEndpoint;
         private TimeSpan m_maxIdleTime;
 
         #endregion
@@ -49,14 +49,14 @@ namespace AzureFtpServer.Ftp
 
         #region Construction
 
-        public FtpServer(IFileSystemClassFactory fileSystemClassFactory, IPEndPoint ftpEndpoint, IPEndPoint pasvEndpoint,
-            IPAddress localAddress, int maxClients, TimeSpan maxIdleTime, string connectionEncoding)
+        public FtpServer(IFileSystemClassFactory fileSystemClassFactory, IPEndPoint ftpEndpoint, IPEndPoint localPasvEndpoint,
+            IPEndPoint externallyVisiblePasvEndpoint, int maxClients, TimeSpan maxIdleTime, string connectionEncoding)
         {
             m_apConnections = new ArrayList();
             m_fileSystemClassFactory = fileSystemClassFactory;
             this.m_ftpEndpoint = ftpEndpoint;
-            this.m_pasvEndpoint = pasvEndpoint;
-            this.m_localAddress = localAddress;
+            this.m_localPasvEndpoint = localPasvEndpoint;
+            this.m_externallyVisiblePasvEndpoint = externallyVisiblePasvEndpoint;
             this.m_maxClients = maxClients;
             this.m_maxIdleTime = maxIdleTime;
 
@@ -192,8 +192,8 @@ namespace AzureFtpServer.Ftp
             var handler = new FtpSocketHandler(
                 fileSystemClassFactory: m_fileSystemClassFactory, 
                 nId: m_nId, 
-                pasvEndpoint: this.m_pasvEndpoint, 
-                localAddress: this.m_localAddress,
+                localPasvEndpoint: this.m_localPasvEndpoint, 
+                externallyVisiblePasvEndpoint: this.m_externallyVisiblePasvEndpoint,
                 maxIdleTime: this.m_maxIdleTime);
             
             // get encoding for the socket connection

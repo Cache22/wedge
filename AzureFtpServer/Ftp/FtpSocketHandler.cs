@@ -1,15 +1,15 @@
-using System;
-using System.IO;
-using System.Net.Sockets;
-using System.Threading;
-using System.Diagnostics;
-using AzureFtpServer.Ftp.FileSystem;
-using AzureFtpServer.General;
-using AzureFtpServer.Provider;
-using System.Net;
-
 namespace AzureFtpServer.Ftp
 {
+    using AzureFtpServer.Ftp.FileSystem;
+    using AzureFtpServer.General;
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Net;
+    using System.Net.Sockets;
+    using System.Threading;
+
+
     /// <summary>
     /// Contains the socket read functionality. Works on its own thread since all socket operation is blocking.
     /// </summary>
@@ -22,8 +22,8 @@ namespace AzureFtpServer.Ftp
         private readonly int m_nId;
         private FtpConnectionObject m_theCommands;
         private TcpClient m_theSocket;
-        private IPEndPoint m_pasvEndpoint;
-        private IPAddress m_localAddress;
+        private IPEndPoint m_localPasvEndpoint;
+        private IPEndPoint m_externallyVisiblePasvEndpoint;
         private Thread m_theThread;
         private Thread m_theMonitorThread;
         private static DateTime m_lastActiveTime; // shared between threads
@@ -45,12 +45,12 @@ namespace AzureFtpServer.Ftp
 
         #region Construction
 
-        public FtpSocketHandler(IFileSystemClassFactory fileSystemClassFactory, int nId, IPEndPoint pasvEndpoint, IPAddress localAddress, TimeSpan maxIdleTime)
+        public FtpSocketHandler(IFileSystemClassFactory fileSystemClassFactory, int nId, IPEndPoint localPasvEndpoint, IPEndPoint externallyVisiblePasvEndpoint, TimeSpan maxIdleTime)
         {
             m_nId = nId;
             m_fileSystemClassFactory = fileSystemClassFactory;
-            this.m_pasvEndpoint = pasvEndpoint;
-            this.m_localAddress = localAddress;
+            this.m_localPasvEndpoint = localPasvEndpoint;
+            this.m_externallyVisiblePasvEndpoint = externallyVisiblePasvEndpoint;
             this.m_maxIdleTime = maxIdleTime;
         }
 
@@ -62,9 +62,11 @@ namespace AzureFtpServer.Ftp
         {
             m_theSocket = socket;
             m_lastActiveTime = DateTime.Now;
-            m_theCommands = new FtpConnectionObject(m_fileSystemClassFactory, m_nId, socket, 
-                pasvEndpoint: this.m_pasvEndpoint, 
-                localAddress: this.m_localAddress);
+            m_theCommands = new FtpConnectionObject(
+                fileSystemClassFactory: m_fileSystemClassFactory, 
+                nId:  m_nId, socket: socket,
+                localPasvEndpoint: this.m_localPasvEndpoint,
+                externallyVisiblePasvEndpoint: this.m_externallyVisiblePasvEndpoint);
             m_theCommands.Encoding = encoding;
             m_theThread = new Thread(ThreadRun);
             m_theThread.Start();
@@ -85,23 +87,26 @@ namespace AzureFtpServer.Ftp
 
             try
             {
-                int nReceived = m_theSocket.GetStream().Read(abData, 0, m_nBufferSize);
+                NetworkStream networkStream = m_theSocket.GetStream();
+                int nReceived = networkStream.Read(abData, 0, m_nBufferSize);
 
                 while (nReceived > 0)
                 {
                     m_theCommands.Process(abData);
 
                     // the Read method will block
-                    nReceived = m_theSocket.GetStream().Read(abData, 0, m_nBufferSize);
+                    nReceived = networkStream.Read(abData, 0, m_nBufferSize);
 
                     m_lastActiveTime = DateTime.Now;
                 }
             }
-            catch (SocketException)
+            catch (SocketException se)
             {
+                Trace.TraceError(string.Format("SocketException: {0}", se.Message));
             }
-            catch (IOException)
+            catch (IOException ioe)
             {
+                Trace.TraceError(string.Format("IOException: {0}", ioe.Message));
             }
 
             FtpServerMessageHandler.SendMessage(m_nId, "Connection closed");

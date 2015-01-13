@@ -2,13 +2,13 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
     using System.Net;
+    using System.Net.Sockets;
     using System.Threading;
     using AzureFtpServer.Azure;
     using AzureFtpServer.Ftp;
-    using System.Diagnostics;
-    using System.Net.Sockets;
-    using System.IO;
 
     class Program
     {
@@ -23,23 +23,23 @@
                 return new IPEndPoint(IPAddress.Parse(host), port.ToInt());
             };
 
-            Func<IPAddress> getLocalAddress = () => 
+            Func<IPEndPoint> getLocalAddress = () => 
             {
                 string ftpHost = cfg("FtpServerHost");
 
-                if (ftpHost.ToLower() == "localhost") 
-                    return IPAddress.Loopback;
+                if (ftpHost.ToLower() == "localhost")
+                    return new IPEndPoint(address: IPAddress.Loopback, port: endpoint("FTPPASV").Port);
 
                 foreach (var ip in Dns.GetHostEntry(ftpHost).AddressList)
                 {
                     if (ip.AddressFamily == AddressFamily.InterNetwork)
                     {
                         Trace.TraceInformation(string.Format("localAddress == {0}", ip));
-                        return ip;
+                        return new IPEndPoint(address: ip, port: endpoint("FTPPASV").Port);
                     }
                 }
 
-                return IPAddress.None;
+                return null;
             };
 
             Func<Func<string, string, bool>> CheckAccount = () =>
@@ -55,8 +55,8 @@
                         sendQueueNotificationsOnUpload: bool.Parse(cfg("QueueNotification")),
                         checkAccount: CheckAccount()),
                     ftpEndpoint: endpoint("FTP"),
-                    pasvEndpoint: endpoint("FTPPASV"),
-                    localAddress: getLocalAddress(),
+                    localPasvEndpoint: endpoint("FTPPASV"),
+                    externallyVisiblePasvEndpoint: getLocalAddress(),
                     maxClients: cfg("MaxClients").ToInt(),
                     maxIdleTime: TimeSpan.FromSeconds(cfg("MaxIdleSeconds").ToInt()),
                     connectionEncoding: cfg("ConnectionEncoding"));

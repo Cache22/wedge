@@ -21,8 +21,8 @@ namespace AzureFtpServer.Ftp
         private readonly Hashtable m_theCommandHashTable;
         private bool isLogged;
         private static bool m_useDataSocket;
-        private IPEndPoint m_pasvEndpoint;
-        private IPAddress m_localAddress;
+        private IPEndPoint m_localPasvEndpoint;
+        private IPEndPoint m_externallyVisiblePasvEndpoint;
 
         #endregion
 
@@ -37,15 +37,15 @@ namespace AzureFtpServer.Ftp
 
         #region Construction
 
-        public FtpConnectionObject(IFileSystemClassFactory fileSystemClassFactory, int nId, TcpClient socket, IPEndPoint pasvEndpoint, IPAddress localAddress)
+        public FtpConnectionObject(IFileSystemClassFactory fileSystemClassFactory, int nId, TcpClient socket, IPEndPoint localPasvEndpoint, IPEndPoint externallyVisiblePasvEndpoint)
             : base(nId, socket)
         {
             m_theCommandHashTable = new Hashtable();
             m_fileSystemClassFactory = fileSystemClassFactory;
             isLogged = false;
             m_useDataSocket = false;
-            m_pasvEndpoint = pasvEndpoint;
-            m_localAddress = localAddress;
+            m_localPasvEndpoint = localPasvEndpoint;
+            m_externallyVisiblePasvEndpoint = externallyVisiblePasvEndpoint;
             LoadCommands();
         }
 
@@ -90,7 +90,7 @@ namespace AzureFtpServer.Ftp
             AddCommand(new NlstCommandHandler(this));
             AddCommand(new NoopCommandHandler(this));
             AddCommand(new PasswordCommandHandler(this));
-            AddCommand(new PasvCommandHandler(connectionObject: this, pasvEndpoint: m_pasvEndpoint, localAddress: this.m_localAddress));
+            AddCommand(new PasvCommandHandler(connectionObject: this, localPasvEndpoint: m_localPasvEndpoint, externallyVisiblePasvEndpoint: this.m_externallyVisiblePasvEndpoint));
             AddCommand(new PortCommandHandler(this));
             AddCommand(new PwdCommandHandler(this));
             AddCommand(new QuitCommandHandler(this));

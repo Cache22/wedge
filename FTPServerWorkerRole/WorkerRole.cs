@@ -8,10 +8,13 @@
     using Microsoft.WindowsAzure.ServiceRuntime;
     using System;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Net;
     using System.Net.Sockets;
+    using System.Text;
     using System.Threading;
+    using WhatIsMyIP;
 
     public class WorkerRole : RoleEntryPoint
     {
@@ -25,25 +28,46 @@
             RoleEnvironment.Changing += RoleEnvironmentChanging;
 
             Func<string, string> cfg = RoleEnvironment.GetConfigurationSettingValue;
-            Func<string, IPEndPoint> endpoint = name => RoleEnvironment.CurrentRoleInstance.InstanceEndpoints[name].IPEndpoint;
-            Func<IPAddress> getLocalAddress = () => 
+
+            Func<string, RoleInstanceEndpoint> endpoint = name =>
             {
-                string ftpHost = cfg("FtpServerHost");
-
-                if (ftpHost.ToLower() == "localhost") 
-                    return IPAddress.Loopback;
-
-                foreach (var ip in Dns.GetHostEntry(ftpHost).AddressList)
-                {
-                    if (ip.AddressFamily == AddressFamily.InterNetwork)
-                    {
-                        Trace.TraceInformation(string.Format("localAddress == {0}", ip));
-                        return ip;
-                    }
-                }
-
-                return IPAddress.None;
+                return RoleEnvironment.CurrentRoleInstance.InstanceEndpoints[name];
             };
+
+            //Func<IPEndPoint> getLocalAddressFromConfig = () => 
+            //{
+            //    string ftpHost = cfg("FtpServerHost");
+            //    var port = endpoint("FTPPASV").PublicIPEndpoint.Port;
+            //
+            //    if (ftpHost.ToLower() == "localhost") 
+            //        return new IPEndPoint(IPAddress.Loopback, port);
+            //
+            //    foreach (var ip in Dns.GetHostEntry(ftpHost).AddressList)
+            //    {
+            //        if (ip.AddressFamily == AddressFamily.InterNetwork)
+            //        {
+            //            Trace.TraceInformation(string.Format("localAddress == {0}", ip));
+            //            return new IPEndPoint(ip, port);
+            //        }
+            //    }
+            //
+            //    return null;
+            //};
+
+            Func<IPEndPoint> getExternalPASVFromWhatIsMyIp = () =>
+            {
+                var externalAddress = ExternalIPFetcher.GetAddressAsync().Result.IPAddress;
+                var externalPort =  RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTPPASV"].PublicIPEndpoint.Port;
+
+                return new IPEndPoint(externalAddress, externalPort);
+            };
+
+            var sb = new StringBuilder();
+            sb.AppendFormat("StorageAccount = {0}\n", cfg("StorageAccount"));
+            sb.AppendFormat("localPasvEndpoint = {0}\n", endpoint("FTPPASV").IPEndpoint);
+            sb.AppendFormat("externallyVisiblePasvEndpoint = {0}\n", getExternalPASVFromWhatIsMyIp());
+            sb.AppendFormat("FTPPASV = {0}\n", RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTPPASV"].PublicIPEndpoint);
+            File.WriteAllText(string.Format(@"C:\{0}_log.txt", RoleEnvironment.CurrentRoleInstance.Id), sb.ToString());
 
             if (_server == null)
                 _server = new FtpServer(
@@ -51,9 +75,9 @@
                             storageAccount: cfg("StorageAccount"),
                             sendQueueNotificationsOnUpload: bool.Parse(cfg("QueueNotification")),
                             accounts: AccountManager.ParseOldConfiguration(cfg("FtpAccount"))),
-                        ftpEndpoint: endpoint("FTP"),
-                        pasvEndpoint: endpoint("FTPPASV"),
-                        localAddress: getLocalAddress(),
+                        ftpEndpoint: endpoint("FTP").IPEndpoint,
+                        localPasvEndpoint: endpoint("FTPPASV").IPEndpoint,
+                        externallyVisiblePasvEndpoint: getExternalPASVFromWhatIsMyIp(), //  getLocalAddressFromConfig(),
                         maxClients: cfg("MaxClients").ToInt(),
                         maxIdleTime: TimeSpan.FromSeconds(cfg("MaxIdleSeconds").ToInt()),
                         connectionEncoding: cfg("ConnectionEncoding"));
