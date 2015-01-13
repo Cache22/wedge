@@ -1,5 +1,7 @@
 ﻿namespace WhatIsMyIP
 {
+    // Depends on NuGet packages "Microsoft.Net.Http" and "Newtonsoft.Json"
+
     using System;
     using System.Collections.Generic;
     using System.Linq;

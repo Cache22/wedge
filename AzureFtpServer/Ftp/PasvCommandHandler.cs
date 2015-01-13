@@ -30,18 +30,16 @@ namespace AzureFtpServer.FtpCommands
         {
             ConnectionObject.DataConnectionType = DataConnectionType.Passive;
 
-            string pasvListenAddress = GetPassiveAddressInfo();
-
             //return GetMessage(227, string.Format("Entering Passive Mode ({0})", pasvListenAddress));
 
             TcpListener listener = SocketHelpers.CreateTcpListener(this.m_localPasvEndpoint);
-
             if (listener == null)
             {
                 return GetMessage(550, string.Format("Couldn't start listener on port {0}", this.m_localPasvEndpoint.Port));
             }
 
-            SocketHelpers.Send(ConnectionObject.Socket, string.Format("227 Entering Passive Mode ({0})\r\n", pasvListenAddress), ConnectionObject.Encoding);
+            string externallyVisibleAddress = this.m_externallyVisiblePasvEndpoint.AsAddressInfo();
+            SocketHelpers.Send(ConnectionObject.Socket, string.Format("227 Entering Passive Mode ({0})\r\n", externallyVisibleAddress), ConnectionObject.Encoding);
 
             listener.Start();
 
@@ -51,17 +49,15 @@ namespace AzureFtpServer.FtpCommands
 
             return "";
         }
+    }
 
-        private string GetPassiveAddressInfo()
+    public static class IPAddressExtensions
+    {
+        public static string AsAddressInfo(this IPEndPoint endpoint)
         {
-            // get local ipv4 ip
-            IPAddress ipAddress = this.m_externallyVisiblePasvEndpoint.Address;
-
-            string retIpPort = ipAddress.ToString().Replace('.', ',')
-                + ',' + (this.m_localPasvEndpoint.Port / 256).ToString() 
-                + ',' + (this.m_localPasvEndpoint.Port % 256).ToString();
-
-            return retIpPort;
+            return endpoint.Address.ToString().Replace('.', ',')
+                + ',' + (endpoint.Port / 256).ToString()
+                + ',' + (endpoint.Port % 256).ToString();
         }
     }
 }

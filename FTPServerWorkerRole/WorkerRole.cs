@@ -63,10 +63,11 @@
             };
 
             var sb = new StringBuilder();
-            sb.AppendFormat("StorageAccount = {0}\n", cfg("StorageAccount"));
-            sb.AppendFormat("localPasvEndpoint = {0}\n", endpoint("FTPPASV").IPEndpoint);
-            sb.AppendFormat("externallyVisiblePasvEndpoint = {0}\n", getExternalPASVFromWhatIsMyIp());
-            sb.AppendFormat("FTPPASV = {0}\n", RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTPPASV"].PublicIPEndpoint);
+            sb.AppendFormat("StorageAccount = {0}\r\n", cfg("StorageAccount"));
+            sb.AppendFormat("localPasvEndpoint = {0}\r\n", endpoint("FTPPASV").IPEndpoint);
+            sb.AppendFormat("externallyVisiblePasvEndpoint = {0}\r\n", getExternalPASVFromWhatIsMyIp());
+            sb.AppendFormat("FTPPASV.IPEndpoint  = {0}\r\n", RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTPPASV"].IPEndpoint);
+            sb.AppendFormat("FTPPASV.PublicIPEndpoint = {0}\r\n", RoleEnvironment.CurrentRoleInstance.InstanceEndpoints["FTPPASV"].PublicIPEndpoint);
             File.WriteAllText(string.Format(@"C:\{0}_log.txt", RoleEnvironment.CurrentRoleInstance.Id), sb.ToString());
 
             if (_server == null)
