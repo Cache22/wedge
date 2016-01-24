@@ -536,7 +536,7 @@
             CloudQueueClient queueClient = _account.CreateCloudQueueClient();
 
             // Retrieve a reference to a queue
-            CloudQueue queue = queueClient.GetQueueReference("ftp2azure-queue");
+            CloudQueue queue = queueClient.GetQueueReference("wedge-queue");
 
             // Create the queue if it doesn't already exist
             queue.CreateIfNotExists();

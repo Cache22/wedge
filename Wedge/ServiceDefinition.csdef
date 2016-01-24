@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ServiceDefinition name="Wedge" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2015-04.2.6">
+  <WorkerRole name="FTPServerWorkerRole" vmsize="Small">
+    <Runtime executionContext="elevated" />
+    <ConfigurationSettings>
+      <Setting name="StorageAccount" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
+      <Setting name="ConnectionEncoding" />
+      <Setting name="FtpAccount" />
+      <Setting name="MaxClients" />
+      <Setting name="FtpServerHost" />
+      <Setting name="QueueNotification" />
+      <Setting name="MaxIdleSeconds" />
+    </ConfigurationSettings>
+    <Endpoints>
+      <InputEndpoint name="FTP" protocol="tcp" port="21" />
+      <InstanceInputEndpoint name="FTPPASV" protocol="tcp" localPort="10000">
+        <AllocatePublicPortFrom>
+          <FixedPortRange min="10000" max="10104" />
+        </AllocatePublicPortFrom>
+      </InstanceInputEndpoint>
+    </Endpoints>
+  </WorkerRole>
+</ServiceDefinition>

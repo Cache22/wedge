@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="Wedge" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="4" osVersion="*" schemaVersion="2015-04.2.6">
+  <Role name="FTPServerWorkerRole">
+    <Instances count="3" />
+    <ConfigurationSettings>
+      <Setting name="StorageAccount" value="UseDevelopmentStorage=true" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="ConnectionEncoding" value="UTF8" />
+      <Setting name="FtpAccount" value="(container1:test1)(container2:test2)(container3:test3)($root:testroot)" />
+      <Setting name="MaxClients" value="5" />
+      <Setting name="FtpServerHost" value="ftpproxy.cloudapp.net" />
+      <Setting name="QueueNotification" value="false" />
+      <Setting name="MaxIdleSeconds" value="300" />
+    </ConfigurationSettings>
+  </Role>
+</ServiceConfiguration>
